@@ -21,6 +21,7 @@
 		<module>delivery-service</module>
 		<module>kitchen-service</module>
 		<module>notification-service</module>
+		<module>order-service</module>
 	</modules>
 
 </project>
