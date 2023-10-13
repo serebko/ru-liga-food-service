@@ -59,13 +59,13 @@ public class OrderController {
     @ExceptionHandler({IllegalArgumentException.class, NumberFormatException.class})
     @ResponseBody
     public ResponseEntity<String> handleIllegalArgumentException() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid argument");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public ResponseEntity<String> handleException() {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
 }
