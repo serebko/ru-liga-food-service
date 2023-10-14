@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>ru.liga</groupId>
+        <artifactId>dependency_bom</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../dependency_bom/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>migration</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>4.9.1</version>
+                <configuration>
+                    <!-- схема БД.   -->
+                    <changelogSchemaName>public</changelogSchemaName>
+                    <!-- файл с кредами для подключения к БД  -->
+                    <propertyFile>src/main/resources/db/local/liquibase.properties</propertyFile>
+                    <!-- располложение глобального ченджлога  -->
+                    <changeLogFile>src/main/resources/db/master.xml</changeLogFile>
+                    <!-- Указывает каталог, в котором будут храниться CSV-файлы c данными insert. -->
+                    <dataDir>src/main/resources/db/local/data</dataDir>
+                    <!-- log  -->
+                    <verbose>false</verbose>
+                    <logging>debug</logging>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
