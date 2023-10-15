@@ -18,7 +18,7 @@ import java.util.Locale;
 @Tag(name = "API для работы с заказами на стороне ресторана")
 @RestController
 @RequestMapping("/restaurant")
-public class KitchenController {
+public class RestaurantController {
 
     private List<OrderDto> activeOrders;
     private List<OrderDto> completeOrders;

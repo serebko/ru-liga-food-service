@@ -23,7 +23,7 @@ public class DeliveryController {
     private List<DeliveryDto> completeDeliveries;
     {
         deliveries = new ArrayList<>();
-        deliveries.add(new DeliveryDto().setOrder_id("1"));
+        deliveries.add(new DeliveryDto().setOrderId("1"));
         activeDeliveries = new ArrayList<>();
         activeDeliveries.add(new DeliveryDto());
         completeDeliveries = new ArrayList<>();
@@ -48,14 +48,14 @@ public class DeliveryController {
     @Operation(summary = "Установить статус доставки по ID")
     @PostMapping("/delivery/{id}")
     public ResponseEntity<String> setDeliveryStatusById(@PathVariable("id") String stringId,
-                                                        @RequestBody OrderAction order_action) {
+                                                        @RequestBody OrderAction orderAction) {
         long id = Long.parseLong(stringId);
-        if (id <= 0 || !"active".equalsIgnoreCase(order_action.getOrder_action())
-                && !"complete".equalsIgnoreCase(order_action.getOrder_action())) throw new IllegalArgumentException();
+        if (id <= 0 || !"active".equalsIgnoreCase(orderAction.getOrderAction())
+                && !"complete".equalsIgnoreCase(orderAction.getOrderAction())) throw new IllegalArgumentException();
 
         for (DeliveryDto dto : deliveries) {
-            if (stringId.equals(dto.getOrder_id())) {
-                dto.setOrder_action(order_action);
+            if (stringId.equals(dto.getOrderId())) {
+                dto.setOrderAction(orderAction);
                 return ResponseEntity.ok().build();
             }
         }
