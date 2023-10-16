@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class OrderAction {
-    private String order_action;
+    private String orderAction;
 }

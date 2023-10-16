@@ -31,7 +31,7 @@ public class OrderController {
         if (orders.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new OrdersResponse().setOrders(orders));
         }
-        return ResponseEntity.ok(new OrdersResponse().setOrders(orders).setPage_count(10));
+        return ResponseEntity.ok(new OrdersResponse().setOrders(orders).setPageCount(10));
     }
 
     @Operation(summary = "Получить заказ по ID")
@@ -51,7 +51,7 @@ public class OrderController {
 
     @Operation(summary = "Создать новый заказ")
     @PostMapping("/order")
-    public ResponseOnCreation createOrder(@RequestBody OrderToPost order) {
+    public ResponseOnCreation createOrder(@RequestBody OrderRequest order) {
         orders.add(new OrderDto().setId(2L));
         return new ResponseOnCreation();
     }

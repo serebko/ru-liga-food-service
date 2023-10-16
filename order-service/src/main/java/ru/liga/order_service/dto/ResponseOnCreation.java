@@ -7,6 +7,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ResponseOnCreation {
     private String id = "";
-    private String secret_payment_url = "";
-    private String estimated_time_of_arrival = "";
+    private String secretPaymentUrl = "";
+    private String estimatedTimeOfArrival = "";
 }

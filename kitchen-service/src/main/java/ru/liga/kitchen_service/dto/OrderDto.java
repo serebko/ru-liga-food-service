@@ -11,8 +11,8 @@ import java.util.List;
 public class OrderDto {
 
     private String id = "";
-    private List<MenuItem> menu_items = new ArrayList<>();
+    private List<MenuItem> menuItems = new ArrayList<>();
     {
-        menu_items.add(new MenuItem());
+        menuItems.add(new MenuItem());
     }
 }

@@ -10,6 +10,6 @@ import java.util.List;
 public class OrdersResponse {
 
     private List<OrderDto> orders;
-    private int page_index = 0;
-    private int page_count = 0;
+    private int pageIndex = 0;
+    private int pageCount = 0;
 }
