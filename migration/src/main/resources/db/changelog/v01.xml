@@ -5,6 +5,11 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
     <changeSet id="2023-10-14 17:30:00" author="aserebrennikov">
         <sqlFile path="v01/init.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="v01/init_1.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="v01/init_2.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="v01/init_3.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="v01/init_4.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="v01/init_5.sql" relativeToChangelogFile="true"/>
         <rollback>
             <sqlFile path="v01/rollback/init_rollback.sql" relativeToChangelogFile="true"/>
         </rollback>
