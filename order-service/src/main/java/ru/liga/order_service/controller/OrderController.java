@@ -1,8 +1,9 @@
 package ru.liga.order_service.controller;
-
+import advice.GlobalExceptionHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +11,7 @@ import ru.liga.order_service.dto.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Import(GlobalExceptionHandler.class)
 @Tag(name = "API для работы с заказами пользователя")
 @RestController
 @RequestMapping("/customer")
@@ -55,17 +56,4 @@ public class OrderController {
         orders.add(new OrderDto().setId(2L));
         return new ResponseOnCreation();
     }
-
-    @ExceptionHandler({IllegalArgumentException.class, NumberFormatException.class})
-    @ResponseBody
-    public ResponseEntity<String> handleIllegalArgumentException() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public ResponseEntity<String> handleException() {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
-
 }

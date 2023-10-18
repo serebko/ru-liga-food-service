@@ -1,7 +1,9 @@
 package ru.liga.delivery_service.controller;
 
+import advice.GlobalExceptionHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +14,7 @@ import ru.liga.delivery_service.dto.OrderAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
+@Import(GlobalExceptionHandler.class)
 @Tag(name = "API для работы с доставками")
 @RestController
 @RequestMapping("/courier")
@@ -60,17 +62,5 @@ public class DeliveryController {
             }
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
-
-    @ExceptionHandler({IllegalArgumentException.class, NumberFormatException.class})
-    @ResponseBody
-    public ResponseEntity<String> handleIllegalArgumentException() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseBody
-    public ResponseEntity<String> handleException() {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

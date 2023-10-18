@@ -1,7 +1,9 @@
 package ru.liga.kitchen_service.controller;
 
+import advice.GlobalExceptionHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +16,7 @@ import ru.liga.kitchen_service.dto.OrdersResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
+@Import(GlobalExceptionHandler.class)
 @Tag(name = "API для работы с заказами на стороне ресторана")
 @RestController
 @RequestMapping("/restaurant")

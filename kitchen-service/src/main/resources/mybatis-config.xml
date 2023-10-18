@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="application.yaml">
+    </properties>
+    <settings>
+        <setting name="logImpl" value="LOG4J"/>
+    </settings>
+    <environments default="local">
+        <environment id="local">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="org.postgresql.Driver"/>
+                <property name="url" value="jdbc:postgresql://localhost:5432/postgres"/>
+                <property name="username" value="postgres"/>
+                <property name="password" value="lost4815162342"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers><!--в данном блоке необходимо описать маперы, которые используются в проекте-->
+        <mapper class="ru.liga.batisMapper.OrderMapper"/>
+    </mappers>
+</configuration>
