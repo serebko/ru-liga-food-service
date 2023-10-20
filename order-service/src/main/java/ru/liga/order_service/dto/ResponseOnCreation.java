@@ -6,7 +6,8 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 public class ResponseOnCreation {
-    private String id = "";
-    private String secretPaymentUrl = "";
-    private String estimatedTimeOfArrival = "";
+
+    private Long id;
+    private String secretPaymentUrl;
+    private String estimatedTimeOfArrival;
 }

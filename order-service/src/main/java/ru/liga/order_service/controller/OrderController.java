@@ -1,59 +1,48 @@
 package ru.liga.order_service.controller;
 import advice.GlobalExceptionHandler;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.liga.order_service.dto.*;
+import ru.liga.order_service.service.OrderHelper;
 
-import java.util.ArrayList;
-import java.util.List;
 @Import(GlobalExceptionHandler.class)
+@ComponentScan
 @Tag(name = "API для работы с заказами пользователя")
 @RestController
 @RequestMapping("/customer")
 public class OrderController {
-
-    private List<OrderDto> orders;
-
-    {
-        orders = new ArrayList<>();
-        orders.add(new OrderDto());
+    private final OrderHelper orderHelper;
+    @Autowired
+    public OrderController(OrderHelper orderHelper) {
+        this.orderHelper = orderHelper;
     }
 
     @Operation(summary = "Получить все заказы")
     @GetMapping("/orders")
     public ResponseEntity<OrdersResponse> getOrders() {
-        //Не понимаю какой на этом маппинге может быть BAD_REQUEST,
-        //но в схеме Д/З он указан, поэтому этим статусом отвечаю, если список orders пуст
-        if (orders.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new OrdersResponse().setOrders(orders));
-        }
-        return ResponseEntity.ok(new OrdersResponse().setOrders(orders).setPageCount(10));
+        return orderHelper.getOrders();
     }
 
     @Operation(summary = "Получить заказ по ID")
     @GetMapping("/order/{id}")
-    public ResponseEntity<OrderDto> getOrderById(@PathVariable("id") String idString) {
-
-        Long id = Long.parseLong(idString);
-        if (id <= 0) throw new IllegalArgumentException();
-
-        for (OrderDto orderDto : orders) {
-            if (id.equals(orderDto.getId()))
-                return ResponseEntity.ok(orderDto);
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    public ResponseEntity<OrderDto> getOrderById(@PathVariable("id") Long id) {
+        return orderHelper.getOrderById(id);
     }
 
     @Operation(summary = "Создать новый заказ")
     @PostMapping("/order")
-    public ResponseOnCreation createOrder(@RequestBody OrderRequest order) {
-        orders.add(new OrderDto().setId(2L));
-        return new ResponseOnCreation();
+    public ResponseEntity<ResponseOnCreation> createOrder(@RequestBody OrderRequest order) {
+        return orderHelper.postNewOrder(order);
+    }
+
+    @Operation(summary = "Удалить заказ по ID")
+    @DeleteMapping("/order/{id}")
+    public ResponseEntity<String> deleteOrderById(@PathVariable("id") Long id) {
+        return orderHelper.deleteOrderById(id);
     }
 }

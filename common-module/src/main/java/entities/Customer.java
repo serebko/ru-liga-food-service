@@ -1,8 +1,9 @@
 package entities;
 
 import lombok.*;
-
+import lombok.experimental.Accessors;
 import javax.persistence.*;
+import java.util.List;
 
 @Table(name = "customers")
 @Entity
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
+@Accessors(chain = true)
 public class Customer {
 
     @Id
@@ -24,5 +26,8 @@ public class Customer {
 
     private String address;
 
+    private String coordinates;
 
+    @OneToMany(mappedBy = "customer")
+    private List<Order> orderList;
 }

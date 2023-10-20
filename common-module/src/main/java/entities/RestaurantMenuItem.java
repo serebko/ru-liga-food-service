@@ -1,6 +1,7 @@
 package entities;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
+@Accessors(chain = true)
 public class RestaurantMenuItem {
 
     @Id
@@ -19,7 +21,7 @@ public class RestaurantMenuItem {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
+    @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
     private String name;

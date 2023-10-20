@@ -1,9 +1,9 @@
 package entities;
 
 import lombok.*;
-import service.OrderStatus;
-
+import lombok.experimental.Accessors;
 import javax.persistence.*;
+import java.util.Set;
 
 @Table(name = "couriers")
 @Entity
@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
+@Accessors(chain = true)
 public class Courier {
 
     @Id
@@ -21,7 +22,11 @@ public class Courier {
 
     private String phone;
 
-    private OrderStatus deliveryStatus;
+    @Column(name = "status")
+    private String deliveryStatus;
 
     private String coordinates;
+
+    @OneToMany(mappedBy = "courier")
+    private Set<Order> orderSet;
 }

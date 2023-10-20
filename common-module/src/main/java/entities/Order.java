@@ -1,10 +1,10 @@
 package entities;
 
 import lombok.*;
-import service.OrderStatus;
-
+import lombok.experimental.Accessors;
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Table(name = "orders")
 @Entity
@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @ToString
+@Accessors(chain = true)
 public class Order {
 
     @Id
@@ -21,18 +22,22 @@ public class Order {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id", referencedColumnName = "id")
+    @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    private OrderStatus status;
+    private String status;
 
     @ManyToOne
-    @JoinColumn(name = "courier_id", referencedColumnName = "id")
+    @JoinColumn(name = "courier_id")
     private Courier courier;
 
     private Timestamp timestamp;
+
+    @OneToMany(mappedBy = "order")
+    private List<OrderItem> items;
+
 }

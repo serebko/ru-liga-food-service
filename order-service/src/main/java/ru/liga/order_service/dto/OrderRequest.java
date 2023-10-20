@@ -7,6 +7,6 @@ import java.util.List;
 @Data
 public class OrderRequest {
 
-    private String restaurantId;
-    private List<MenuItem> menuItems;
+    private Long restaurantId;
+    private List<MenuItemDto> menuItemDtos;
 }
