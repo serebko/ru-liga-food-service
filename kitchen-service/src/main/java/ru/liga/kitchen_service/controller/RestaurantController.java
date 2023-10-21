@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.liga.kitchen_service.dto.OrdersResponse;
-import ru.liga.kitchen_service.dto.ResponseOnCreation;
-import ru.liga.kitchen_service.dto.RestaurantMenuItemRequest;
+import ru.liga.kitchen_service.dto.*;
 import ru.liga.kitchen_service.service.KitchenService;
 
 @Import(GlobalExceptionHandler.class)
@@ -41,5 +39,12 @@ public class RestaurantController {
     @DeleteMapping("/item/{id}")
     public ResponseEntity<String> deleteRestaurantMenuItemById(@PathVariable("id") Long id){
         return kitchenService.deleteRestaurantMenuItemById(id);
+    }
+
+    @Operation(summary = "Изменить цену позиции в меню")
+    @PostMapping("/item/{id}")
+    public ResponseEntity<ChangePriceResponse> changePriceInMenuItem(@PathVariable("id") Long id,
+                                                                     @RequestBody ChangePriceRequest request) {
+        return kitchenService.changePriceInMenuItem(id, request);
     }
 }

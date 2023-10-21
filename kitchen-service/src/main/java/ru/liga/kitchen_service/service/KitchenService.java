@@ -123,4 +123,24 @@ public class KitchenService {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    public ResponseEntity<ChangePriceResponse> changePriceInMenuItem(Long id, ChangePriceRequest request) {
+
+        if (id <= 0) throw new IllegalArgumentException();
+
+        RestaurantMenuItem menuItem = restaurantMenuItemRepository.findRestaurantMenuItemById(id);
+        Double newPrice = request.getNewPrice();
+
+        if (menuItem == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        if (newPrice <= 0) throw new IllegalArgumentException();
+
+        menuItem.setPrice(newPrice);
+        restaurantMenuItemRepository.save(menuItem);
+
+        ChangePriceResponse response = new ChangePriceResponse()
+                .setItemId(menuItem.getId())
+                .setNewPrice(newPrice);
+
+        return ResponseEntity.ok(response);
+    }
+
 }
