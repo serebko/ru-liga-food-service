@@ -16,17 +16,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Order findOrderById(Long id);
     @Transactional
     @Query("from Restaurant where id = :id")
-    Restaurant getRestaurantById(@Param("id") Long id);
+    Restaurant findRestaurantByIdQuery(@Param("id") Long id);
 
     @Transactional
     @Query("from Customer where id = :id")
-    Customer getCustomerById(@Param("id") Long id);
+    Customer findCustomerByIdQuery(@Param("id") Long id);
 
     @Transactional
     @Query("from RestaurantMenuItem where id = :id")
-    RestaurantMenuItem getRestaurantMenuItemById(@Param("id") Long id);
+    RestaurantMenuItem findRestaurantMenuItemByIdQuery(@Param("id") Long id);
 
     @Transactional
     void deleteOrderById(Long id);
-
 }

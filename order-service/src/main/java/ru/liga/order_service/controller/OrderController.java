@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.liga.order_service.dto.*;
-import ru.liga.order_service.service.OrderHelper;
+import ru.liga.order_service.service.OrderService;
 
 @Import(GlobalExceptionHandler.class)
 @ComponentScan
@@ -16,33 +16,33 @@ import ru.liga.order_service.service.OrderHelper;
 @RestController
 @RequestMapping("/customer")
 public class OrderController {
-    private final OrderHelper orderHelper;
+    private final OrderService orderService;
     @Autowired
-    public OrderController(OrderHelper orderHelper) {
-        this.orderHelper = orderHelper;
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
     }
 
     @Operation(summary = "Получить все заказы")
     @GetMapping("/orders")
     public ResponseEntity<OrdersResponse> getOrders() {
-        return orderHelper.getOrders();
+        return orderService.getOrders();
     }
 
     @Operation(summary = "Получить заказ по ID")
     @GetMapping("/order/{id}")
     public ResponseEntity<OrderDto> getOrderById(@PathVariable("id") Long id) {
-        return orderHelper.getOrderById(id);
+        return orderService.getOrderById(id);
     }
 
     @Operation(summary = "Создать новый заказ")
     @PostMapping("/order")
     public ResponseEntity<ResponseOnCreation> createOrder(@RequestBody OrderRequest order) {
-        return orderHelper.postNewOrder(order);
+        return orderService.postNewOrder(order);
     }
 
     @Operation(summary = "Удалить заказ по ID")
     @DeleteMapping("/order/{id}")
     public ResponseEntity<String> deleteOrderById(@PathVariable("id") Long id) {
-        return orderHelper.deleteOrderById(id);
+        return orderService.deleteOrderById(id);
     }
 }

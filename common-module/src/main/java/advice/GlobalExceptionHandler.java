@@ -11,9 +11,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ComponentScan
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler({IllegalArgumentException.class, NumberFormatException.class})
-    public ResponseEntity<String> handleIllegalArgumentException() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(NumberFormatException.class)
+    public ResponseEntity<String> handleNumberFormatException(NumberFormatException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

@@ -33,5 +33,3 @@ where  id = 3;
 
 update couriers set status = 'picking'
 where  id = 4;
-
-alter table orders alter column courier_id drop not null;
