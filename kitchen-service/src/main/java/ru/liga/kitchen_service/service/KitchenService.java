@@ -116,7 +116,10 @@ public class KitchenService {
         }
 
         restaurantMenuItemRepository.deleteById(id);
-        if (restaurantMenuItemRepository.existsById(id)) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+        if (restaurantMenuItemRepository.existsById(id))
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

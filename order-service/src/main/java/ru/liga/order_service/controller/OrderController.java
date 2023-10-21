@@ -45,4 +45,17 @@ public class OrderController {
     public ResponseEntity<String> deleteOrderById(@PathVariable("id") Long id) {
         return orderService.deleteOrderById(id);
     }
+
+    @Operation(summary = "Добавить позицию в заказ по ID")
+    @PostMapping("/order/{id}/item")
+    public ResponseEntity<OrderItemResponse> createNewOrderItem(@PathVariable("id") Long id,
+                                                  @RequestBody OrderItemRequest request) {
+        return orderService.createNewOrderItem(id, request);
+    }
+
+    @Operation(summary = "Удалить позицию из заказа по ID")
+    @DeleteMapping("/order/item/{id}")
+    public ResponseEntity<String> deleteOrderItemById(@PathVariable("id") Long id) {
+        return orderService.deleteOrderItemById(id);
+    }
 }

@@ -157,10 +157,55 @@ public class OrderService {
 
             orderRepository.deleteOrderById(id);
             return orderRepository.existsById(id) ?
-                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
-                    : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build() :
+                    ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
 
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    public ResponseEntity<OrderItemResponse> createNewOrderItem(Long id, OrderItemRequest request) {
+
+        if (id <= 0) throw new IllegalArgumentException();
+
+        Order order = orderRepository.findOrderById(id);
+        if (order == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        Long restaurantMenuItemId = request.getRestaurantMenuItemId();
+        Long quantity = request.getQuantity();
+
+        if (restaurantMenuItemId <= 0 || quantity <= 0) throw new IllegalArgumentException();
+
+        RestaurantMenuItem restaurantMenuItem = restaurantMenuItemRepository.findRestaurantMenuItemById(restaurantMenuItemId);
+        OrderItem newOrderItem = new OrderItem()
+                .setOrder(order)
+                .setQuantity(quantity)
+                .setRestaurantMenuItem(restaurantMenuItem)
+                .setPrice(restaurantMenuItem.getPrice() * quantity);
+
+        OrderItem savedOrderItem = orderItemRepository.save(newOrderItem);
+
+        order.getItems().add(savedOrderItem);
+
+        OrderItemResponse response = new OrderItemResponse()
+                .setNewOrderItemId(savedOrderItem.getId())
+                .setPrice(savedOrderItem.getPrice());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    public ResponseEntity<String> deleteOrderItemById(Long id) {
+
+        if (id <= 0) throw new IllegalArgumentException();
+
+        if (orderItemRepository.existsById(id)) {
+
+            orderItemRepository.deleteOrderItemById(id);
+
+            return orderItemRepository.existsById(id) ?
+                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build() :
+                    ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }

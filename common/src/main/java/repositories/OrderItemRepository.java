@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 @ComponentScan(basePackages = "entities")
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     @Transactional
-    OrderItem findOrderItemById(Long id);
+    OrderItem findOrderItemByRestaurantMenuItemId(Long itemId);
 
     @Transactional
-    OrderItem findOrderItemByRestaurantMenuItemId(Long item);
+    void deleteOrderItemById(Long id);
 }
