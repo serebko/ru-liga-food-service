@@ -1,8 +1,11 @@
 package ru.liga.delivery_service.dto;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
-public class OrderAction {
+@Accessors(chain = true)
+public class OrderActionDto {
+
     private String orderAction;
 }

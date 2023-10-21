@@ -8,10 +8,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class DeliveryDto {
 
-    private String orderId = "";
-    private Restaurant restaurant = new Restaurant();
-    private Customer customer = new Customer();
-    private String payment = "";
+    private Long orderId;
+    private RestaurantDto restaurant;
+    private CustomerDto customer;
+    private String payment;
     @JsonIgnore
-    private OrderAction orderAction;
+    private OrderActionDto orderAction;
 }
