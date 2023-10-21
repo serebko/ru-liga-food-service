@@ -5,8 +5,8 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class MenuItem {
+public class ResponseOnCreation {
 
-    private String quantity = "";
-    private String menuItemId = "";
+    private Long menuItemId;
+    private String name;
 }

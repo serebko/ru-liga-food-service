@@ -11,6 +11,6 @@ public class OrdersResponse {
 
     private List<OrderDto> orders;
     private int pageIndex = 0;
-    private int pageCount = 10;
+    private int pageCount = 0;
 
 }

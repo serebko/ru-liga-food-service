@@ -2,29 +2,41 @@ package ru.liga.order_service.service;
 
 import entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.liga.order_service.dto.*;
-import ru.liga.order_service.repository.OrderItemRepository;
-import ru.liga.order_service.repository.OrderRepository;
+import repositories.*;
+
 
 import java.sql.Timestamp;
 import java.util.*;
 
 @Service
+@ComponentScan(basePackages = "repositories")
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final CustomerRepository customerRepository;
+    private final RestaurantMenuItemRepository restaurantMenuItemRepository;
 
     @Autowired
-    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository) {
+    public OrderService(OrderRepository orderRepository,
+                        OrderItemRepository orderItemRepository,
+                        RestaurantRepository restaurantRepository,
+                        CustomerRepository customerRepository,
+                        RestaurantMenuItemRepository restaurantMenuItemRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
+        this.restaurantRepository = restaurantRepository;
+        this.customerRepository = customerRepository;
+        this.restaurantMenuItemRepository = restaurantMenuItemRepository;
     }
 
-    public List<OrderItemDto> transformOrderItemToOrderItemDto(List<OrderItem> items) {
+    private List<OrderItemDto> transformOrderItemToOrderItemDto(List<OrderItem> items) {
 
         List<OrderItemDto> orderItemDtos = new ArrayList<>();
         for (OrderItem item : items) {
@@ -37,7 +49,7 @@ public class OrderService {
         return orderItemDtos;
     }
 
-    public List<OrderDto> transformOrderToOrderDto(List<Order> orders) {
+    private List<OrderDto> transformOrderToOrderDto(List<Order> orders) {
 
         List<OrderDto> orderDtos = new ArrayList<>();
         for (Order order : orders) {
@@ -50,7 +62,7 @@ public class OrderService {
         return orderDtos;
     }
 
-    public OrdersResponse transformOrderToOrdersResponse(List<Order> orders) {
+    private OrdersResponse transformOrderToOrdersResponse(List<Order> orders) {
 
         OrdersResponse response = new OrdersResponse();
 
@@ -86,13 +98,13 @@ public class OrderService {
         Long restaurantId = orderRequest.getRestaurantId();
         if (restaurantId <= 0) throw new IllegalArgumentException();
 
-        List<MenuItemDto> menuItemDtos = orderRequest.getMenuItemDtos();
+        List<MenuItemDto> menuItemDtos = orderRequest.getMenuItems();
 
         Order order = new Order();
-        Restaurant restaurant = orderRepository.findRestaurantByIdQuery(restaurantId);
+        Restaurant restaurant = restaurantRepository.findRestaurantById(restaurantId);
         if (restaurant == null) throw new IllegalArgumentException();
-        //Пока неизвестно как понимать кто имено заказывает, поэтому допустим, что заказывает customer с id=3
-        Customer customer = orderRepository.findCustomerByIdQuery(3L);
+        //Пока неизвестно как понимать кто именно заказывает, поэтому допустим, что заказывает customer с id=3
+        Customer customer = customerRepository.findCustomerById(3L);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         order.setStatus("created")
@@ -101,9 +113,12 @@ public class OrderService {
                 .setTimestamp(timestamp);
         Order savedOrder = orderRepository.save(order);
 
+        if (!orderRepository.existsById(savedOrder.getId()))
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
         List<OrderItem> items = new ArrayList<>();
         for (MenuItemDto dto : menuItemDtos) {
-            RestaurantMenuItem restaurantMenuItem = orderRepository.findRestaurantMenuItemByIdQuery(dto.getMenuItemId());
+            RestaurantMenuItem restaurantMenuItem = restaurantMenuItemRepository.findRestaurantMenuItemById(dto.getMenuItemId());
             if (restaurantMenuItem == null) throw new IllegalArgumentException();
 
             Long quantity = dto.getQuantity();
@@ -121,6 +136,8 @@ public class OrderService {
         }
 
         savedOrder.setItems(items);
+        savedOrder.getRestaurant().getOrders().add(savedOrder);
+
         orderRepository.save(savedOrder);
 
         ResponseOnCreation response = new ResponseOnCreation().setId(savedOrder.getId())

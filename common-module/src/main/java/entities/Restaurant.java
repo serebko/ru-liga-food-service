@@ -3,7 +3,7 @@ package entities;
 import lombok.*;
 import lombok.experimental.Accessors;
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Table(name = "restaurants")
 @Entity
@@ -30,5 +30,8 @@ public class Restaurant {
     private String coordinates;
 
     @OneToMany(mappedBy = "restaurant")
-    private Set<RestaurantMenuItem> restaurantMenuItemSet;
+    private List<Order> orders;
+
+    @OneToMany(mappedBy = "restaurant")
+    private List<RestaurantMenuItem> restaurantMenuItemSet;
 }

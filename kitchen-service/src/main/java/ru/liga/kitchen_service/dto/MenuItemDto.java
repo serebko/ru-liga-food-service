@@ -3,12 +3,10 @@ package ru.liga.kitchen_service.dto;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.util.List;
-
 @Data
 @Accessors(chain = true)
-public class OrderDto {
+public class MenuItemDto {
 
-    private Long id;
-    private List<MenuItemDto> orderItems;
+    private Long quantity;
+    private Long menuItemId;
 }

@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "ru.liga.order_service.repository")
+@EnableJpaRepositories(basePackages = "repositories")
 @EntityScan(basePackages = "entities")
 public class OrderServiceApplication {
 
