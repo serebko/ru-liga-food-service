@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import repositories.*;
 import entities.*;
 import ru.liga.delivery_service.dto.*;
+import service.OrderStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class DeliveryService {
 
         List<DeliveryDto> deliveryDtos = new ArrayList<>();
         for (Order order : orders) {
-            OrderActionDto orderActionDto = new OrderActionDto().setOrderAction(order.getStatus());
+            OrderActionDto orderActionDto = new OrderActionDto().setOrderAction(order.getStatus().toString());
             RestaurantDto restaurantDto = new RestaurantDto().setAddress(order.getRestaurant().getAddress())
                     .setDistance("1200");
             CustomerDto customerDto = new CustomerDto().setAddress(order.getCustomer().getAddress())
@@ -43,7 +44,7 @@ public class DeliveryService {
         return deliveryDtos;
     }
     public ResponseEntity<DeliveriesResponse> getDeliveriesByStatus(String status) {
-        List<Order> orders = orderRepository.findOrdersByStatus(status);
+        List<Order> orders = orderRepository.findOrdersByStatus(OrderStatus.valueOf(status.toUpperCase()));
         if (orders == null || orders.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         DeliveriesResponse response = new DeliveriesResponse();
@@ -57,9 +58,9 @@ public class DeliveryService {
         if (id <= 0) throw new IllegalArgumentException();
 
         if (orderRepository.existsById(id)) {
-            String orderAction = orderActionDto.getOrderAction();
+            String orderAction = orderActionDto.getOrderAction().toUpperCase();
             Order order = orderRepository.findOrderById(id);
-            order.setStatus(orderAction);
+            order.setStatus(OrderStatus.valueOf(orderAction));
             orderRepository.save(order);
             return ResponseEntity.ok().build();
         }

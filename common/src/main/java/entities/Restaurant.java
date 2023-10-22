@@ -2,6 +2,8 @@ package entities;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import service.OrderStatus;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -23,7 +25,8 @@ public class Restaurant {
     private String address;
 
     @Column(name = "status")
-    private String kitchenStatus;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus kitchenStatus;
 
     private String name;
 
@@ -33,5 +36,5 @@ public class Restaurant {
     private List<Order> orders;
 
     @OneToMany(mappedBy = "restaurant")
-    private List<RestaurantMenuItem> restaurantMenuItemSet;
+    private List<RestaurantMenuItem> restaurantMenuItems;
 }

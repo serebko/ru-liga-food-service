@@ -2,6 +2,8 @@ package entities;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import service.OrderStatus;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
@@ -29,7 +31,8 @@ public class Order {
     @JoinColumn(name = "restaurant_id")
     private Restaurant restaurant;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @ManyToOne
     @JoinColumn(name = "courier_id")

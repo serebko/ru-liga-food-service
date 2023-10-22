@@ -2,8 +2,10 @@ package entities;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import service.OrderStatus;
+
 import javax.persistence.*;
-import java.util.Set;
+import java.util.List;
 
 @Table(name = "couriers")
 @Entity
@@ -23,10 +25,11 @@ public class Courier {
     private String phone;
 
     @Column(name = "status")
-    private String deliveryStatus;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus deliveryStatus;
 
     private String coordinates;
 
     @OneToMany(mappedBy = "courier")
-    private Set<Order> orderSet;
+    private List<Order> orders;
 }

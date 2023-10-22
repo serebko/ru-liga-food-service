@@ -6,9 +6,11 @@
     <changeSet id="2023-10-19 17:30:00" author="aserebrennikov">
         <sqlFile path="v03/init.sql" relativeToChangelogFile="true"/>
         <sqlFile path="v03/init_1.sql" relativeToChangelogFile="true"/>
+        <sqlFile path="v03/init_2.sql" relativeToChangelogFile="true"/>
         <rollback>
             <sqlFile path="v03/rollback/init_rollback.sql" relativeToChangelogFile="true"/>
             <sqlFile path="v03/rollback/init_1_rollback.sql" relativeToChangelogFile="true"/>
+            <sqlFile path="v03/rollback/init_2_rollback.sql" relativeToChangelogFile="true"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

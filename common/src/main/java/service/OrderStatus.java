@@ -1,31 +1,33 @@
 package service;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 public enum OrderStatus {
-    CUSTOMER_CREATED("created"),
-    CUSTOMER_PAID("paid"),
-    CUSTOMER_CANCELLED("cancelled"),
-    KITCHEN_ACCEPTED("accepted"),
-    KITCHEN_PREPARING("preparing"),
-    KITCHEN_DENIED("denied"),
-    KITCHEN_REFUNDED("refunded"),
-    DELIVERY_PENDING("pending"),
-    DELIVERY_PICKING("picking"),
-    DELIVERY_DELIVERING("delivering"),
-    DELIVERY_COMPLETE("complete"),
-    DELIVERY_DENIED("denied"),
-    DELIVERY_REFUNDED("refunded");
-
-    private String status;
-
-    OrderStatus(String status) {
-        this.status = status;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    @Enumerated(EnumType.STRING)
+    CUSTOMER_CREATED,
+    @Enumerated(EnumType.STRING)
+    CUSTOMER_PAID,
+    @Enumerated(EnumType.STRING)
+    CUSTOMER_CANCELLED,
+    @Enumerated(EnumType.STRING)
+    KITCHEN_ACCEPTED,
+    @Enumerated(EnumType.STRING)
+    KITCHEN_PREPARING,
+    @Enumerated(EnumType.STRING)
+    KITCHEN_DENIED,
+    @Enumerated(EnumType.STRING)
+    KITCHEN_REFUNDED,
+    @Enumerated(EnumType.STRING)
+    DELIVERY_PENDING,
+    @Enumerated(EnumType.STRING)
+    DELIVERY_PICKING,
+    @Enumerated(EnumType.STRING)
+    DELIVERY_DELIVERING,
+    @Enumerated(EnumType.STRING)
+    DELIVERY_COMPLETE,
+    @Enumerated(EnumType.STRING)
+    DELIVERY_DENIED,
+    @Enumerated(EnumType.STRING)
+    DELIVERY_REFUNDED
 }

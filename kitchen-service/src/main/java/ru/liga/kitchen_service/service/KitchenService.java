@@ -66,12 +66,12 @@ public class KitchenService {
     }
 
     public ResponseEntity<OrdersResponse> getOrdersByStatus(String status) {
-        //Пока неизвестно как понимать какой ресторан делает запрос, поэтому допустим, что это ресторан с id=3
-        Restaurant restaurant = restaurantRepository.findRestaurantById(3L);
+        //Пока неизвестно как понимать какой ресторан делает запрос, поэтому допустим, что это ресторан с id=4
+        Restaurant restaurant = restaurantRepository.findRestaurantById(4L);
         List<Order> orderList = restaurant.getOrders();
         List<Order> resultOrderList = new ArrayList<>();
         for (Order order : orderList) {
-            if (status.equalsIgnoreCase(order.getStatus()))
+            if (status.equalsIgnoreCase(order.getStatus().toString()))
                 resultOrderList.add(order);
             else return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -82,8 +82,8 @@ public class KitchenService {
     public ResponseEntity<ResponseOnCreation> postNewRestaurantMenuItem(RestaurantMenuItemRequest request) {
 
         ResponseOnCreation response = new ResponseOnCreation();
-        //Пока неизвестно как понимать какой ресторан делает запрос, поэтому допустим, что это ресторан с id=3
-        Restaurant restaurant = restaurantRepository.findRestaurantById(3L);
+        //Пока неизвестно как понимать какой ресторан делает запрос, поэтому допустим, что это ресторан с id=4
+        Restaurant restaurant = restaurantRepository.findRestaurantById(4L);
 
         RestaurantMenuItem item = new RestaurantMenuItem()
                 .setRestaurant(restaurant)
@@ -92,7 +92,7 @@ public class KitchenService {
                 .setImage(request.getImage())
                 .setDescription(request.getDescription());
 
-        restaurant.getRestaurantMenuItemSet().add(item);
+        restaurant.getRestaurantMenuItems().add(item);
 
         RestaurantMenuItem savedItem = restaurantMenuItemRepository.save(item);
 

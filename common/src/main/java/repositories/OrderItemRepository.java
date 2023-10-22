@@ -13,5 +13,8 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     OrderItem findOrderItemByRestaurantMenuItemId(Long itemId);
 
     @Transactional
+    OrderItem findOrderItemById(Long id);
+
+    @Transactional
     void deleteOrderItemById(Long id);
 }

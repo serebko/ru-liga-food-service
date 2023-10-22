@@ -29,5 +29,5 @@ public class Customer {
     private String coordinates;
 
     @OneToMany(mappedBy = "customer")
-    private List<Order> orderList;
+    private List<Order> orders;
 }

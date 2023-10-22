@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.liga.order_service.dto.*;
 import repositories.*;
-
+import service.OrderStatus;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -103,11 +103,11 @@ public class OrderService {
         Order order = new Order();
         Restaurant restaurant = restaurantRepository.findRestaurantById(restaurantId);
         if (restaurant == null) throw new IllegalArgumentException();
-        //Пока неизвестно как понимать кто именно заказывает, поэтому допустим, что заказывает customer с id=3
-        Customer customer = customerRepository.findCustomerById(3L);
+        //Пока неизвестно как понимать кто именно заказывает, поэтому допустим, что заказывает customer с id=4
+        Customer customer = customerRepository.findCustomerById(4L);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        order.setStatus("created")
+        order.setStatus(OrderStatus.CUSTOMER_CREATED)
                 .setCustomer(customer)
                 .setRestaurant(restaurant)
                 .setTimestamp(timestamp);
@@ -118,6 +118,7 @@ public class OrderService {
 
         List<OrderItem> items = new ArrayList<>();
         for (MenuItemDto dto : menuItemDtos) {
+
             RestaurantMenuItem restaurantMenuItem = restaurantMenuItemRepository.findRestaurantMenuItemById(dto.getMenuItemId());
             if (restaurantMenuItem == null) throw new IllegalArgumentException();
 
@@ -136,6 +137,7 @@ public class OrderService {
         }
 
         savedOrder.setItems(items);
+        savedOrder.getCustomer().getOrders().add(savedOrder);
         savedOrder.getRestaurant().getOrders().add(savedOrder);
 
         orderRepository.save(savedOrder);
@@ -154,6 +156,10 @@ public class OrderService {
             Order order = orderRepository.findOrderById(id);
             List<OrderItem> orderItems = order.getItems();
             orderItems.forEach(orderItem -> orderItemRepository.deleteById(orderItem.getId()));
+            order.getCustomer().getOrders().remove(order);
+            order.getRestaurant().getOrders().remove(order);
+            if (order.getCourier() != null)
+                order.getCourier().getOrders().remove(order);
 
             orderRepository.deleteOrderById(id);
             return orderRepository.existsById(id) ?
@@ -200,6 +206,8 @@ public class OrderService {
 
         if (orderItemRepository.existsById(id)) {
 
+            OrderItem item = orderItemRepository.findOrderItemById(id);
+            item.getOrder().getItems().remove(item);
             orderItemRepository.deleteOrderItemById(id);
 
             return orderItemRepository.existsById(id) ?
