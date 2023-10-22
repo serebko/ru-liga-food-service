@@ -36,4 +36,11 @@ public class DeliveryController {
                                                         @RequestBody OrderActionDto orderActionDto) {
         return deliveryService.setDeliveryStatusById(id, orderActionDto);
     }
+
+    @Operation(summary = "Назначить курьера на заказ по ID заказа")
+    @PostMapping("/delivery/{id}/courier")
+    public ResponseEntity<String> setCourierForOrderById(@PathVariable("id") Long id) {
+        return deliveryService.setCourierForOrderById(id);
+    }
+
 }

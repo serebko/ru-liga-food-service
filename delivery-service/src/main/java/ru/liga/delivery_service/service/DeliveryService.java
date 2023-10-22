@@ -18,10 +18,13 @@ import java.util.List;
 public class DeliveryService {
 
     private final OrderRepository orderRepository;
+    private final CourierRepository courierRepository;
 
     @Autowired
-    public DeliveryService(OrderRepository orderRepository) {
+    public DeliveryService(OrderRepository orderRepository,
+                           CourierRepository courierRepository) {
         this.orderRepository = orderRepository;
+        this.courierRepository = courierRepository;
     }
 
     private List<DeliveryDto> transformOrderToDeliveryDto(List<Order> orders) {
@@ -61,6 +64,21 @@ public class DeliveryService {
             String orderAction = orderActionDto.getOrderAction().toUpperCase();
             Order order = orderRepository.findOrderById(id);
             order.setStatus(OrderStatus.valueOf(orderAction));
+            orderRepository.save(order);
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    public ResponseEntity<String> setCourierForOrderById(Long id) {
+
+        if (id <= 0) throw new IllegalArgumentException();
+
+        //пока непонятно как назначать курьера, поэтому пусть это будет курьер с id=3
+        Courier courier = courierRepository.findCourierById(3L);
+        if (orderRepository.existsById(id)) {
+            Order order = orderRepository.findOrderById(id).setCourier(courier);
             orderRepository.save(order);
             return ResponseEntity.ok().build();
         }
