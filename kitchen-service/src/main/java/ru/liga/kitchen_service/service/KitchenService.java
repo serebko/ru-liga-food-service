@@ -12,7 +12,13 @@ import org.springframework.stereotype.Service;
 import repositories.OrderItemRepository;
 import repositories.RestaurantMenuItemRepository;
 import repositories.RestaurantRepository;
-import ru.liga.kitchen_service.dto.*;
+import ru.liga.kitchen_service.dto.ChangePriceRequest;
+import ru.liga.kitchen_service.dto.ChangePriceResponse;
+import ru.liga.kitchen_service.dto.MenuItemDto;
+import ru.liga.kitchen_service.dto.OrderDto;
+import ru.liga.kitchen_service.dto.OrdersResponse;
+import ru.liga.kitchen_service.dto.ResponseOnCreation;
+import ru.liga.kitchen_service.dto.RestaurantMenuItemRequest;
 
 import java.util.ArrayList;
 import java.util.Collections;

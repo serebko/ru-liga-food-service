@@ -6,8 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import ru.liga.order_service.dto.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import ru.liga.order_service.dto.OrderDto;
+import ru.liga.order_service.dto.OrderItemRequest;
+import ru.liga.order_service.dto.OrderItemResponse;
+import ru.liga.order_service.dto.OrderRequest;
+import ru.liga.order_service.dto.OrdersResponse;
+import ru.liga.order_service.dto.ResponseOnCreation;
 import ru.liga.order_service.service.OrderService;
 
 @Import(GlobalExceptionHandler.class)
@@ -49,7 +60,7 @@ public class OrderController {
     @Operation(summary = "Добавить позицию в заказ по ID")
     @PostMapping("/order/{id}/item")
     public ResponseEntity<OrderItemResponse> createNewOrderItem(@PathVariable("id") Long id,
-                                                  @RequestBody OrderItemRequest request) {
+                                                                @RequestBody OrderItemRequest request) {
         return orderService.createNewOrderItem(id, request);
     }
 

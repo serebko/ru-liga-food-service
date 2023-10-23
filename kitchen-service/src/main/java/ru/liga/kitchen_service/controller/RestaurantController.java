@@ -6,8 +6,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import ru.liga.kitchen_service.dto.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import ru.liga.kitchen_service.dto.ChangePriceRequest;
+import ru.liga.kitchen_service.dto.ChangePriceResponse;
+import ru.liga.kitchen_service.dto.OrdersResponse;
+import ru.liga.kitchen_service.dto.ResponseOnCreation;
+import ru.liga.kitchen_service.dto.RestaurantMenuItemRequest;
 import ru.liga.kitchen_service.service.KitchenService;
 
 @Import(GlobalExceptionHandler.class)

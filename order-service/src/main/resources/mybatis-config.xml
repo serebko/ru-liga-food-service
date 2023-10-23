@@ -19,7 +19,7 @@
             </dataSource>
         </environment>
     </environments>
-    <mappers><!--в данном блоке необходимо описать маперы, которые используются в проекте-->
-        <mapper class="ru.liga.batisMapper.OrderMapper"/>
+    <mappers>
+        <mapper class="batisMappers.OrderMapper"/>
     </mappers>
 </configuration>

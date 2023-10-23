@@ -19,7 +19,7 @@
         <liquibase.version>4.9.1</liquibase.version>
         <snakeyaml>2.2</snakeyaml>
         <spring.version>2.7.16</spring.version>
-        <mybatis.version>3.0.2</mybatis.version>
+        <mybatis.version>2.1.4</mybatis.version>
         <postgres.version>42.3.8</postgres.version>
         <rabbit-test.version>2.4.16</rabbit-test.version>
         <security-test.version>5.7.11</security-test.version>
@@ -75,11 +75,11 @@
                 <artifactId>postgresql</artifactId>
                 <version>${postgres.version}</version>
             </dependency>
-            <!--<dependency>
+            <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis.version}</version>
-            </dependency>-->
+            </dependency>
             <dependency>
                 <groupId>org.mybatis.spring.boot</groupId>
                 <artifactId>mybatis-spring-boot-starter-test</artifactId>
@@ -96,15 +96,9 @@
                 <artifactId>h2</artifactId>
                 <scope>runtime</scope>
             </dependency>
-
-            <!--<dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-amqp</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-security</artifactId>
+                <artifactId>spring-boot-starter-amqp</artifactId>
                 <version>${spring.version}</version>
             </dependency>
             <dependency>
@@ -113,6 +107,13 @@
                 <version>${rabbit-test.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <!--<dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-test</artifactId>

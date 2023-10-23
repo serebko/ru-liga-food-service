@@ -1,17 +1,35 @@
 package ru.liga.order_service.service;
 
-import entities.*;
+import entities.Customer;
+import entities.Order;
+import entities.OrderItem;
+import entities.Restaurant;
+import entities.RestaurantMenuItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import ru.liga.order_service.dto.*;
-import repositories.*;
+import repositories.CustomerRepository;
+import repositories.OrderItemRepository;
+import repositories.OrderRepository;
+import repositories.RestaurantMenuItemRepository;
+import repositories.RestaurantRepository;
+import ru.liga.order_service.dto.MenuItemDto;
+import ru.liga.order_service.dto.OrderDto;
+import ru.liga.order_service.dto.OrderItemDto;
+import ru.liga.order_service.dto.OrderItemRequest;
+import ru.liga.order_service.dto.OrderItemResponse;
+import ru.liga.order_service.dto.OrderRequest;
+import ru.liga.order_service.dto.OrdersResponse;
+import ru.liga.order_service.dto.ResponseOnCreation;
+import ru.liga.order_service.dto.RestaurantDto;
 import service.OrderStatus;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @ComponentScan(basePackages = "repositories")

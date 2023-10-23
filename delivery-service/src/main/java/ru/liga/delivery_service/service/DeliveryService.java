@@ -1,13 +1,19 @@
 package ru.liga.delivery_service.service;
 
+import entities.Courier;
+import entities.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import repositories.*;
-import entities.*;
-import ru.liga.delivery_service.dto.*;
+import repositories.CourierRepository;
+import repositories.OrderRepository;
+import ru.liga.delivery_service.dto.CustomerDto;
+import ru.liga.delivery_service.dto.DeliveriesResponse;
+import ru.liga.delivery_service.dto.DeliveryDto;
+import ru.liga.delivery_service.dto.OrderActionDto;
+import ru.liga.delivery_service.dto.RestaurantDto;
 import service.OrderStatus;
 
 import java.util.ArrayList;
