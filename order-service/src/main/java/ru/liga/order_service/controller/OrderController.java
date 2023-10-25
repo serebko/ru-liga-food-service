@@ -70,4 +70,16 @@ public class OrderController {
     public ResponseEntity<String> deleteOrderItemById(@PathVariable("id") Long id) {
         return orderService.deleteOrderItemById(id);
     }
+
+    @Operation(summary = "Получить ресторан по ID. *Тест MyBatis*")
+    @GetMapping("/batis/restaurant/{id}")
+    public ResponseEntity<Map<String, Object>> getRestaurantById(@PathVariable("id") Long id) {
+        return orderService.getRestaurantByIdBatis(id);
+    }
+
+    @Operation(summary = "Получить ресторан по имени. *Тест MyBatis*")
+    @GetMapping("/batis/restaurant")
+    public ResponseEntity<Map<String, Object>> getRestaurantByName(@RequestParam String name) {
+        return orderService.getRestaurantByNameBatis(name);
+    }
 }

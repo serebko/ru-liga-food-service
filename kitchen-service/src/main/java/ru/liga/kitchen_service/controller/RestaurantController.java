@@ -54,7 +54,7 @@ public class RestaurantController {
     @Operation(summary = "Изменить цену позиции в меню")
     @PostMapping("/item/{id}")
     public ResponseEntity<String> changePriceInMenuItem(@PathVariable("id") Long id,
-                                                                     @RequestBody PriceDTO request) {
+                                                        @RequestBody PriceDTO request) {
         return kitchenService.changePriceInMenuItemById(id, request);
     }
 }

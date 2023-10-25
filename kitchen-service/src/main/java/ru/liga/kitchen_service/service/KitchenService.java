@@ -38,7 +38,6 @@ public class KitchenService {
     private final RestaurantRepository restaurantRepository;
     private final RestaurantMenuItemRepository restaurantMenuItemRepository;
     private final OrderItemRepository orderItemRepository;
-
     private final OrderRepository orderRepository;
 
     @Autowired
@@ -148,5 +147,4 @@ public class KitchenService {
 
         return ResponseEntity.ok().build();
     }
-
 }

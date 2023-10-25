@@ -20,6 +20,6 @@
         </environment>
     </environments>
     <mappers>
-        <mapper class="batisMappers.OrderMapper"/>
+        <mapper class="ru.liga.order_service.mapper.RestaurantMapper"/>
     </mappers>
 </configuration>

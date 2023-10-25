@@ -27,6 +27,7 @@ import ru.liga.order_service.dto.OrderItemRequest;
 import ru.liga.order_service.dto.OrderRequest;
 import ru.liga.order_service.dto.ResponseOnCreation;
 import ru.liga.order_service.dto.RestaurantDTO;
+import ru.liga.order_service.mapper.RestaurantMapper;
 import service.OrderStatus;
 
 import java.sql.Timestamp;
@@ -45,18 +46,21 @@ public class OrderService {
     private final RestaurantRepository restaurantRepository;
     private final CustomerRepository customerRepository;
     private final RestaurantMenuItemRepository restaurantMenuItemRepository;
+    private final RestaurantMapper restaurantMapper;
 
     @Autowired
     public OrderService(OrderRepository orderRepository,
                         OrderItemRepository orderItemRepository,
                         RestaurantRepository restaurantRepository,
                         CustomerRepository customerRepository,
-                        RestaurantMenuItemRepository restaurantMenuItemRepository) {
+                        RestaurantMenuItemRepository restaurantMenuItemRepository,
+                        RestaurantMapper restaurantMapper) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.restaurantRepository = restaurantRepository;
         this.customerRepository = customerRepository;
         this.restaurantMenuItemRepository = restaurantMenuItemRepository;
+        this.restaurantMapper = restaurantMapper;
     }
 
     private List<OrderItemDTO> convertOrderItemToOrderItemDto(List<OrderItemEntity> items) {
@@ -200,5 +204,33 @@ public class OrderService {
         orderItemRepository.deleteById(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    public ResponseEntity<Map<String, Object>> getRestaurantByIdBatis(Long id) {
+
+        if (id <= 0)
+            throw new IllegalArgumentException();
+
+        RestaurantEntity restaurant = restaurantMapper.findById(id);
+
+        if (restaurant == null)
+            throw new EntityException(ExceptionStatus.RESTAURANT_NOT_FOUND);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("restaurant", restaurant);
+
+        return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<Map<String, Object>> getRestaurantByNameBatis(String name) {
+
+        RestaurantEntity restaurant = restaurantMapper.findByName(name);
+        if (restaurant == null)
+            throw new EntityException(ExceptionStatus.RESTAURANT_NOT_FOUND);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("restaurant", restaurant);
+
+        return ResponseEntity.ok(response);
     }
 }
