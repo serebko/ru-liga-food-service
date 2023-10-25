@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.liga.kitchen_service.dto.OrderActionDTO;
 import ru.liga.kitchen_service.dto.PriceDTO;
 import ru.liga.kitchen_service.dto.RestaurantMenuItemDTO;
 import ru.liga.kitchen_service.service.KitchenService;
@@ -56,5 +57,12 @@ public class RestaurantController {
     public ResponseEntity<String> changePriceInMenuItem(@PathVariable("id") Long id,
                                                         @RequestBody PriceDTO request) {
         return kitchenService.changePriceInMenuItemById(id, request);
+    }
+
+    @Operation(summary = "Изменить статус заказа через feign-клиент, используя метод из delivery-service")
+    @PostMapping("/order/{id}")
+    public ResponseEntity<String> setOrderStatusById(@PathVariable("id") Long id,
+                                                     @RequestBody OrderActionDTO orderAction) {
+        return kitchenService.setOrderStatusById(id, orderAction);
     }
 }

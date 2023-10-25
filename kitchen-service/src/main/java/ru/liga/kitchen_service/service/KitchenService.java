@@ -18,6 +18,8 @@ import repositories.OrderItemRepository;
 import repositories.OrderRepository;
 import repositories.RestaurantMenuItemRepository;
 import repositories.RestaurantRepository;
+import ru.liga.kitchen_service.client.DeliveryServiceClient;
+import ru.liga.kitchen_service.dto.OrderActionDTO;
 import ru.liga.kitchen_service.dto.PriceDTO;
 import ru.liga.kitchen_service.dto.OrderItemDTO;
 import ru.liga.kitchen_service.dto.OrderDTO;
@@ -39,16 +41,19 @@ public class KitchenService {
     private final RestaurantMenuItemRepository restaurantMenuItemRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
+    private final DeliveryServiceClient deliveryServiceClient;
 
     @Autowired
     public KitchenService(RestaurantRepository restaurantRepository,
                           RestaurantMenuItemRepository restaurantMenuItemRepository,
                           OrderItemRepository orderItemRepository,
-                          OrderRepository orderRepository) {
+                          OrderRepository orderRepository,
+                          DeliveryServiceClient deliveryServiceClient) {
         this.restaurantRepository = restaurantRepository;
         this.restaurantMenuItemRepository = restaurantMenuItemRepository;
         this.orderItemRepository = orderItemRepository;
         this.orderRepository = orderRepository;
+        this.deliveryServiceClient = deliveryServiceClient;
     }
 
     private List<OrderItemDTO> convertOrderItemToOrderItemDTO(List<OrderItemEntity> orderItemEntities) {
@@ -88,10 +93,10 @@ public class KitchenService {
                 .setDescription(request.getDescription());
     }
 
-    public ResponseEntity<Map<String, Object>> getOrdersByStatus(String status, int index, int size) {
+    public ResponseEntity<Map<String, Object>> getOrdersByStatus(String status, int pageIndex, int pageSize) {
         //TODO: когда будет авторизация, тогда изменить под запрос от определенного ресторана
 
-        PageRequest pageRequest = PageRequest.of(index, size);
+        PageRequest pageRequest = PageRequest.of(pageIndex, pageSize);
         Page<OrderEntity> orderEntities = orderRepository
                 .findOrderEntitiesByStatus(OrderStatus.valueOf(status.toUpperCase()), pageRequest);
 
@@ -103,8 +108,8 @@ public class KitchenService {
 
         Map<String, Object> response = new HashMap<>();
         response.put("orders", orderDTOS);
-        response.put("page_index", index);
-        response.put("page_count", size);
+        response.put("page_index", pageIndex);
+        response.put("page_count", pageSize);
 
         return ResponseEntity.ok(response);
     }
@@ -146,5 +151,9 @@ public class KitchenService {
         restaurantMenuItemRepository.save(menuItem);
 
         return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<String> setOrderStatusById(Long id, OrderActionDTO orderAction) {
+        return deliveryServiceClient.setOrderStatusById(id, orderAction);
     }
 }

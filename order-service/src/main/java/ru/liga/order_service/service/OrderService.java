@@ -95,9 +95,9 @@ public class OrderService {
                 .setTimestamp(orderEntity.getTimestamp());
     }
 
-    public ResponseEntity<Map<String, Object>> getOrders(int index, int size) {
+    public ResponseEntity<Map<String, Object>> getOrders(int pageIndex, int pageSize) {
 
-        PageRequest pageRequest = PageRequest.of(index, size);
+        PageRequest pageRequest = PageRequest.of(pageIndex, pageSize);
         Page<OrderEntity> orderPage = orderRepository.findAll(pageRequest);
 
         if (orderPage.isEmpty())
@@ -107,8 +107,8 @@ public class OrderService {
         List<OrderDTO> orderDTOS = convertOrderToOrderDto(orders);
         Map<String, Object> response = new HashMap<>();
         response.put("orders", orderDTOS);
-        response.put("page_index", index);
-        response.put("page_count", size);
+        response.put("page_index", pageIndex);
+        response.put("page_count", pageSize);
 
         return ResponseEntity.ok(response);
     }

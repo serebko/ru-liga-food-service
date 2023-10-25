@@ -56,9 +56,9 @@ public class DeliveryService {
                 .setCustomer(customerDto);
     }
 
-    public ResponseEntity<Map<String, Object>> getDeliveriesByStatus(String status, int index, int size) {
+    public ResponseEntity<Map<String, Object>> getDeliveriesByStatus(String status, int pageIndex, int pageSize) {
 
-        PageRequest pageRequest = PageRequest.of(index, size);
+        PageRequest pageRequest = PageRequest.of(pageIndex, pageSize);
         Page<OrderEntity> orderEntitiesPage = orderRepository
                 .findOrderEntitiesByStatus(OrderStatus.valueOf(status.toUpperCase()), pageRequest);
 
@@ -70,8 +70,8 @@ public class DeliveryService {
 
         Map<String, Object> response = new HashMap<>();
         response.put("orders", deliveryDtos);
-        response.put("page_index", index);
-        response.put("page_count", size);
+        response.put("page_index", pageIndex);
+        response.put("page_count", pageSize);
 
         return ResponseEntity.ok(response);
     }

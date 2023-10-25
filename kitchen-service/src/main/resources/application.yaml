@@ -9,6 +9,8 @@ management:
       show-details: ALWAYS
 
 spring:
+  application:
+    name: kitchen-service
   jpa:
     hibernate:
       ddl-auto: none
