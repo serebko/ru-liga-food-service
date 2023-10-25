@@ -13,7 +13,7 @@
 
     <artifactId>order-service</artifactId>
     <packaging>jar</packaging>
-    <name>order</name>
+    <name>orderEntity</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

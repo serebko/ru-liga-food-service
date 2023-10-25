@@ -1,30 +1,37 @@
 package ru.liga.kitchen_service.service;
 
-import entities.Order;
-import entities.OrderItem;
-import entities.Restaurant;
-import entities.RestaurantMenuItem;
+import advice.EntityException;
+import advice.ExceptionStatus;
+import entities.OrderEntity;
+import entities.OrderItemEntity;
+import entities.RestaurantEntity;
+import entities.RestaurantMenuItemEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import repositories.OrderItemRepository;
+import repositories.OrderRepository;
 import repositories.RestaurantMenuItemRepository;
 import repositories.RestaurantRepository;
-import ru.liga.kitchen_service.dto.ChangePriceRequest;
-import ru.liga.kitchen_service.dto.ChangePriceResponse;
-import ru.liga.kitchen_service.dto.MenuItemDto;
-import ru.liga.kitchen_service.dto.OrderDto;
-import ru.liga.kitchen_service.dto.OrdersResponse;
-import ru.liga.kitchen_service.dto.ResponseOnCreation;
-import ru.liga.kitchen_service.dto.RestaurantMenuItemRequest;
+import ru.liga.kitchen_service.dto.PriceDTO;
+import ru.liga.kitchen_service.dto.OrderItemDTO;
+import ru.liga.kitchen_service.dto.OrderDTO;
+import ru.liga.kitchen_service.dto.RestaurantMenuItemDTO;
+import service.OrderStatus;
+
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
+@Transactional
 @ComponentScan(basePackages = "repositories")
 public class KitchenService {
 
@@ -32,121 +39,114 @@ public class KitchenService {
     private final RestaurantMenuItemRepository restaurantMenuItemRepository;
     private final OrderItemRepository orderItemRepository;
 
+    private final OrderRepository orderRepository;
+
     @Autowired
     public KitchenService(RestaurantRepository restaurantRepository,
                           RestaurantMenuItemRepository restaurantMenuItemRepository,
-                          OrderItemRepository orderItemRepository) {
+                          OrderItemRepository orderItemRepository,
+                          OrderRepository orderRepository) {
         this.restaurantRepository = restaurantRepository;
         this.restaurantMenuItemRepository = restaurantMenuItemRepository;
         this.orderItemRepository = orderItemRepository;
+        this.orderRepository = orderRepository;
     }
 
-    private List<MenuItemDto> transformOrderDtoToMenuItemDto(List<OrderItem> orderItems) {
-        List<MenuItemDto> menuItemDtos = new ArrayList<>();
-        for (OrderItem item : orderItems) {
-            MenuItemDto dto = new MenuItemDto()
+    private List<OrderItemDTO> convertOrderItemToOrderItemDTO(List<OrderItemEntity> orderItemEntities) {
+        List<OrderItemDTO> orderItemDTOS = new ArrayList<>();
+        for (OrderItemEntity item : orderItemEntities) {
+            OrderItemDTO dto = new OrderItemDTO()
                     .setMenuItemId(item.getRestaurantMenuItem().getId())
                     .setQuantity(item.getQuantity());
-            menuItemDtos.add(dto);
+            orderItemDTOS.add(dto);
         }
-        return menuItemDtos;
+        return orderItemDTOS;
     }
-    private List<OrderDto> transformOrderToOrderDto(List<Order> orders) {
-        List<OrderDto> orderDtos = new ArrayList<>();
-        for (Order order : orders) {
-            List<OrderItem> items = order.getItems();
+    private List<OrderDTO> convertOrderToOrderDto(List<OrderEntity> orderEntities) {
+        List<OrderDTO> orderDTOS = new ArrayList<>();
+        for (OrderEntity orderEntity : orderEntities) {
+            List<OrderItemEntity> items = orderEntity.getItems();
 
-            OrderDto dto = new OrderDto()
-                    .setId(order.getId())
-                    .setOrderItems(transformOrderDtoToMenuItemDto(items));
-            orderDtos.add(dto);
+            OrderDTO dto = new OrderDTO()
+                    .setId(orderEntity.getId())
+                    .setOrderItems(convertOrderItemToOrderItemDTO(items));
+            orderDTOS.add(dto);
         }
-        return orderDtos;
-    }
-    private OrdersResponse transformOrderToOrdersResponse(List<Order> orders) {
-        OrdersResponse response = new OrdersResponse();
-        if (!orders.isEmpty()) {
-            return response.setOrders(transformOrderToOrderDto(orders)).setPageCount(10);
-        }
-        return response.setOrders(Collections.emptyList());
+        return orderDTOS;
     }
 
-    public ResponseEntity<OrdersResponse> getOrdersByStatus(String status) {
-        //Пока неизвестно как понимать какой ресторан делает запрос, поэтому допустим, что это ресторан с id=4
-        Restaurant restaurant = restaurantRepository.findRestaurantById(4L);
-        List<Order> orderList = restaurant.getOrders();
-        List<Order> resultOrderList = new ArrayList<>();
-        for (Order order : orderList) {
-            if (status.equalsIgnoreCase(order.getStatus().toString()))
-                resultOrderList.add(order);
-            else return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    private RestaurantMenuItemEntity mapRestaurantMenuItem(RestaurantMenuItemDTO request) {
+        //TODO: когда будет авторизация, тогда изменить под запрос от определенного ресторана, пока id=4
 
-        return ResponseEntity.ok(transformOrderToOrdersResponse(resultOrderList));
-    }
+        RestaurantEntity restaurant = restaurantRepository.findById(4L)
+                .orElseThrow(() -> new EntityException(ExceptionStatus.RESTAURANT_NOT_FOUND));
 
-    public ResponseEntity<ResponseOnCreation> postNewRestaurantMenuItem(RestaurantMenuItemRequest request) {
-
-        ResponseOnCreation response = new ResponseOnCreation();
-        //Пока неизвестно как понимать какой ресторан делает запрос, поэтому допустим, что это ресторан с id=4
-        Restaurant restaurant = restaurantRepository.findRestaurantById(4L);
-
-        RestaurantMenuItem item = new RestaurantMenuItem()
+        return new RestaurantMenuItemEntity()
                 .setRestaurant(restaurant)
                 .setName(request.getName())
                 .setPrice(request.getPrice())
                 .setImage(request.getImage())
                 .setDescription(request.getDescription());
+    }
 
-        restaurant.getRestaurantMenuItems().add(item);
+    public ResponseEntity<Map<String, Object>> getOrdersByStatus(String status, int index, int size) {
+        //TODO: когда будет авторизация, тогда изменить под запрос от определенного ресторана
 
-        RestaurantMenuItem savedItem = restaurantMenuItemRepository.save(item);
+        PageRequest pageRequest = PageRequest.of(index, size);
+        Page<OrderEntity> orderEntities = orderRepository
+                .findOrderEntitiesByStatus(OrderStatus.valueOf(status.toUpperCase()), pageRequest);
 
-        if (!restaurantMenuItemRepository.existsById(savedItem.getId()))
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        if (orderEntities.isEmpty())
+            throw new EntityException(ExceptionStatus.ORDER_NOT_FOUND);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response.setMenuItemId(savedItem.getId()).setName(savedItem.getName()));
+        List<OrderEntity> orders = orderEntities.getContent();
+        List<OrderDTO> orderDTOS = convertOrderToOrderDto(orders);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("orders", orderDTOS);
+        response.put("page_index", index);
+        response.put("page_count", size);
+
+        return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<String> postNewRestaurantMenuItem(RestaurantMenuItemDTO request) {
+
+        RestaurantMenuItemEntity savedItem = restaurantMenuItemRepository.save(mapRestaurantMenuItem(request));
+        savedItem.getRestaurant().addMenuItem(savedItem);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     public ResponseEntity<String> deleteRestaurantMenuItemById(Long id) {
-        if (id <= 0) throw new IllegalArgumentException();
 
-        if (!restaurantMenuItemRepository.existsById(id))
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        // TODO: @если указать в связи меню и заказа cascadeType delete,
+        //  то у нас будет удаляться каскадно запись в таблице order при только одном запросе@
+        //  *** rest_menu_item не содержит в себе связь с order_item, только order_item имеет OneToOne связь с rest_menu_item
 
-        RestaurantMenuItem menuItem = restaurantMenuItemRepository.findRestaurantMenuItemById(id);
-        //проверяем использует ли хоть один order_item данный menu_item, если да, то удаляем соответствующий order_item
-        if (orderItemRepository.findOrderItemByRestaurantMenuItemId(menuItem.getId()) != null) {
-            OrderItem orderItem = orderItemRepository.findOrderItemByRestaurantMenuItemId(menuItem.getId());
-            orderItemRepository.deleteById(orderItem.getId());
-        }
+        try {
+            List<OrderItemEntity> orderItemEntities = orderItemRepository.findAllByRestaurantMenuItemId(id)
+                    .orElseThrow(() -> new EntityException(ExceptionStatus.ORDER_ITEM_NOT_FOUND));
+            orderItemRepository.deleteAll(orderItemEntities);
+        } catch (EntityException ignored) {}
 
         restaurantMenuItemRepository.deleteById(id);
-
-        if (restaurantMenuItemRepository.existsById(id))
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    public ResponseEntity<ChangePriceResponse> changePriceInMenuItem(Long id, ChangePriceRequest request) {
+    public ResponseEntity<String> changePriceInMenuItemById(Long id, PriceDTO request) {
 
-        if (id <= 0) throw new IllegalArgumentException();
-
-        RestaurantMenuItem menuItem = restaurantMenuItemRepository.findRestaurantMenuItemById(id);
         Double newPrice = request.getNewPrice();
-
-        if (menuItem == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         if (newPrice <= 0) throw new IllegalArgumentException();
+
+        RestaurantMenuItemEntity menuItem = restaurantMenuItemRepository.findById(id)
+                .orElseThrow(() -> new EntityException(ExceptionStatus.RESTAURANT_MENU_ITEM_NOT_FOUND));
 
         menuItem.setPrice(newPrice);
         restaurantMenuItemRepository.save(menuItem);
 
-        ChangePriceResponse response = new ChangePriceResponse()
-                .setItemId(menuItem.getId())
-                .setNewPrice(newPrice);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().build();
     }
 
 }

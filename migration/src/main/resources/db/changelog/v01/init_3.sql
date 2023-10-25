@@ -20,7 +20,7 @@ create table if not exists orders
 comment on table orders is 'Заказы';
 comment on column orders.id is 'Идентификатор заказа';
 comment on column orders.customer_id is 'Идентификатор заказчика';
-comment on column orders.restaurant_id is 'Идентификатор ресорана';
+comment on column orders.restaurant_id is 'Идентификатор ресторана';
 comment on column orders.status is 'Статус заказа';
 comment on column orders.courier_id is 'Идентификатор курьера';
 comment on column orders.timestamp is 'Дата время размещения заказа';

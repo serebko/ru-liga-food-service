@@ -5,7 +5,8 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class RestaurantDto {
+public class MenuItemDTO {
 
-    private String name;
+    private Long quantity;
+    private Long menuItemId;
 }

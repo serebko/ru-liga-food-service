@@ -1,94 +1,90 @@
 package ru.liga.delivery_service.service;
 
-import entities.Courier;
-import entities.Order;
+import advice.EntityException;
+import advice.ExceptionStatus;
+import entities.OrderEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import repositories.CourierRepository;
+import org.springframework.transaction.annotation.Transactional;
 import repositories.OrderRepository;
-import ru.liga.delivery_service.dto.CustomerDto;
-import ru.liga.delivery_service.dto.DeliveriesResponse;
-import ru.liga.delivery_service.dto.DeliveryDto;
-import ru.liga.delivery_service.dto.OrderActionDto;
-import ru.liga.delivery_service.dto.RestaurantDto;
+import ru.liga.delivery_service.dto.CustomerDTO;
+import ru.liga.delivery_service.dto.DeliveryDTO;
+import ru.liga.delivery_service.dto.OrderActionDTO;
+import ru.liga.delivery_service.dto.RestaurantDTO;
 import service.OrderStatus;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @ComponentScan(basePackages = "repositories")
 public class DeliveryService {
 
     private final OrderRepository orderRepository;
-    private final CourierRepository courierRepository;
 
     @Autowired
-    public DeliveryService(OrderRepository orderRepository,
-                           CourierRepository courierRepository) {
+    public DeliveryService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.courierRepository = courierRepository;
     }
 
-    private List<DeliveryDto> transformOrderToDeliveryDto(List<Order> orders) {
+    private List<DeliveryDTO> convertOrderToDeliveryDTO(List<OrderEntity> orderEntities) {
 
-        List<DeliveryDto> deliveryDtos = new ArrayList<>();
-        for (Order order : orders) {
-            OrderActionDto orderActionDto = new OrderActionDto().setOrderAction(order.getStatus().toString());
-            RestaurantDto restaurantDto = new RestaurantDto().setAddress(order.getRestaurant().getAddress())
-                    .setDistance("1200");
-            CustomerDto customerDto = new CustomerDto().setAddress(order.getCustomer().getAddress())
-                    .setDistance("600");
-            DeliveryDto dto = new DeliveryDto()
-                    .setOrderId(order.getId())
-                    .setPayment("payment")
-                    .setOrderAction(orderActionDto)
-                    .setRestaurant(restaurantDto)
-                    .setCustomer(customerDto);
-            deliveryDtos.add(dto);
-        }
-        return deliveryDtos;
+        return orderEntities.stream()
+                .map(this::convertOrderToDeliveryDTO)
+                .collect(Collectors.toList());
     }
-    public ResponseEntity<DeliveriesResponse> getDeliveriesByStatus(String status) {
-        List<Order> orders = orderRepository.findOrdersByStatus(OrderStatus.valueOf(status.toUpperCase()));
-        if (orders == null || orders.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
-        DeliveriesResponse response = new DeliveriesResponse();
-        response.setDelivery(transformOrderToDeliveryDto(orders));
+    private DeliveryDTO convertOrderToDeliveryDTO(OrderEntity orderEntity) {
+        //TODO: Подумать про координаты.
+
+        RestaurantDTO restaurantDto = new RestaurantDTO().setAddress(orderEntity.getRestaurant().getAddress())
+                .setDistance("1200");
+        CustomerDTO customerDto = new CustomerDTO().setAddress(orderEntity.getCustomer().getAddress())
+                .setDistance("600");
+
+        return new DeliveryDTO()
+                .setOrderId(orderEntity.getId())
+                .setPayment("payment")
+                .setRestaurant(restaurantDto)
+                .setCustomer(customerDto);
+    }
+
+    public ResponseEntity<Map<String, Object>> getDeliveriesByStatus(String status, int index, int size) {
+
+        PageRequest pageRequest = PageRequest.of(index, size);
+        Page<OrderEntity> orderEntitiesPage = orderRepository
+                .findOrderEntitiesByStatus(OrderStatus.valueOf(status.toUpperCase()), pageRequest);
+
+        if (orderEntitiesPage.isEmpty())
+            throw new EntityException(ExceptionStatus.ORDER_NOT_FOUND);
+
+        List<OrderEntity> orders = orderEntitiesPage.getContent();
+        List<DeliveryDTO> deliveryDtos = convertOrderToDeliveryDTO(orders);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("orders", deliveryDtos);
+        response.put("page_index", index);
+        response.put("page_count", size);
 
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<String> setDeliveryStatusById(Long id, OrderActionDto orderActionDto) {
+    public ResponseEntity<String> setDeliveryStatusByOrderId(Long orderId, OrderActionDTO orderActionDto) {
 
-        if (id <= 0) throw new IllegalArgumentException();
+        OrderEntity orderEntity = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityException(ExceptionStatus.ORDER_NOT_FOUND));
 
-        if (orderRepository.existsById(id)) {
-            String orderAction = orderActionDto.getOrderAction().toUpperCase();
-            Order order = orderRepository.findOrderById(id);
-            order.setStatus(OrderStatus.valueOf(orderAction));
-            orderRepository.save(order);
-            return ResponseEntity.ok().build();
-        }
+        String orderAction = orderActionDto.getOrderAction().toUpperCase();
+        orderEntity.setStatus(OrderStatus.valueOf(orderAction));
+        orderRepository.save(orderEntity);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
-
-    public ResponseEntity<String> setCourierForOrderById(Long id) {
-
-        if (id <= 0) throw new IllegalArgumentException();
-
-        //пока непонятно как назначать курьера, поэтому пусть это будет курьер с id=3
-        Courier courier = courierRepository.findCourierById(3L);
-        if (orderRepository.existsById(id)) {
-            Order order = orderRepository.findOrderById(id).setCourier(courier);
-            orderRepository.save(order);
-            return ResponseEntity.ok().build();
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.ok().build();
     }
 }

@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "customers")
@@ -24,7 +26,7 @@ import java.util.List;
 @Setter
 @ToString
 @Accessors(chain = true)
-public class Customer {
+public class CustomerEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customers_seq_generator")
@@ -39,6 +41,16 @@ public class Customer {
 
     private String coordinates;
 
-    @OneToMany(mappedBy = "customer")
-    private List<Order> orders;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderEntity> orders = new ArrayList<>();
+
+    public void addOrder(OrderEntity order) {
+        this.orders.add(order);
+        order.setCustomer(this);
+    }
+
+    public void removeOrder(OrderEntity order) {
+        this.orders.remove(order);
+        order.setCustomer(null);
+    }
 }

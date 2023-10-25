@@ -9,6 +9,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import service.OrderStatus;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -19,6 +20,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "couriers")
@@ -29,7 +31,7 @@ import java.util.List;
 @Setter
 @ToString
 @Accessors(chain = true)
-public class Courier {
+public class CourierEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "couriers_seq_gen")
@@ -44,6 +46,16 @@ public class Courier {
 
     private String coordinates;
 
-    @OneToMany(mappedBy = "courier")
-    private List<Order> orders;
+    @OneToMany(mappedBy = "courier", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderEntity> orders = new ArrayList<>();
+
+    public void addOrder(OrderEntity order) {
+        this.orders.add(order);
+        order.setCourier(this);
+    }
+
+    public void removeOrder(OrderEntity order) {
+        this.orders.remove(order);
+        order.setCourier(null);
+    }
 }

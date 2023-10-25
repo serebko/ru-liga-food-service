@@ -5,7 +5,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class OrderItemDto {
+public class OrderItemDTO {
 
     private Double price;
     private Long quantity;

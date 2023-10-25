@@ -5,7 +5,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class CustomerDto {
+public class CustomerDTO {
 
     private String address;
     private String distance;

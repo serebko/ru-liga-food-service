@@ -5,7 +5,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class ChangePriceRequest {
+public class PriceDTO {
 
     private Double newPrice;
 }

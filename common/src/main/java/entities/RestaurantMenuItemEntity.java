@@ -13,12 +13,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 
-@Table(name = "order_items")
+@Table(name = "restaurant_menu_items")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,7 +25,7 @@ import javax.persistence.Table;
 @Setter
 @ToString
 @Accessors(chain = true)
-public class OrderItem {
+public class RestaurantMenuItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_items_seq_gen")
@@ -34,14 +33,14 @@ public class OrderItem {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @JoinColumn(name = "restaurant_id")
+    private RestaurantEntity restaurant;
 
-    @OneToOne
-    @JoinColumn(name ="restaurant_menu_item")
-    private RestaurantMenuItem restaurantMenuItem;
+    private String name;
 
     private Double price;
 
-    private Long quantity;
+    private String image;
+
+    private String description;
 }

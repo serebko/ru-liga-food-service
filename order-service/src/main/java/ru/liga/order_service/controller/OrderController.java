@@ -2,7 +2,6 @@ package ru.liga.order_service.controller;
 import advice.GlobalExceptionHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
@@ -12,14 +11,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.liga.order_service.dto.OrderDto;
+import ru.liga.order_service.dto.OrderDTO;
 import ru.liga.order_service.dto.OrderItemRequest;
-import ru.liga.order_service.dto.OrderItemResponse;
 import ru.liga.order_service.dto.OrderRequest;
-import ru.liga.order_service.dto.OrdersResponse;
 import ru.liga.order_service.dto.ResponseOnCreation;
 import ru.liga.order_service.service.OrderService;
+
+import java.util.Map;
 
 @Import(GlobalExceptionHandler.class)
 @ComponentScan
@@ -28,20 +28,21 @@ import ru.liga.order_service.service.OrderService;
 @RequestMapping("/customer")
 public class OrderController {
     private final OrderService orderService;
-    @Autowired
+
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 
     @Operation(summary = "Получить все заказы")
     @GetMapping("/orders")
-    public ResponseEntity<OrdersResponse> getOrders() {
-        return orderService.getOrders();
+    public ResponseEntity<Map<String, Object>> getOrders(@RequestParam(defaultValue = "0") int pageIndex,
+                                                         @RequestParam(defaultValue = "10") int pageSize) {
+        return orderService.getOrders(pageIndex, pageSize);
     }
 
     @Operation(summary = "Получить заказ по ID")
     @GetMapping("/order/{id}")
-    public ResponseEntity<OrderDto> getOrderById(@PathVariable("id") Long id) {
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable("id") Long id) {
         return orderService.getOrderById(id);
     }
 
@@ -59,8 +60,8 @@ public class OrderController {
 
     @Operation(summary = "Добавить позицию в заказ по ID")
     @PostMapping("/order/{id}/item")
-    public ResponseEntity<OrderItemResponse> createNewOrderItem(@PathVariable("id") Long id,
-                                                                @RequestBody OrderItemRequest request) {
+    public ResponseEntity<String> createNewOrderItem(@PathVariable("id") Long id,
+                                                     @RequestBody OrderItemRequest request) {
         return orderService.createNewOrderItem(id, request);
     }
 

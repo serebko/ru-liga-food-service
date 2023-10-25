@@ -7,10 +7,8 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-public class OrdersResponse {
+public class OrderDTO {
 
-    private List<OrderDto> orders;
-    private int pageIndex = 0;
-    private int pageCount = 0;
-
+    private Long id;
+    private List<OrderItemDTO> orderItems;
 }

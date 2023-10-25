@@ -8,10 +8,10 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-public class OrderDto {
+public class OrderDTO {
 
     private Long id;
-    private RestaurantDto restaurant;
+    private RestaurantDTO restaurant;
     private Timestamp timestamp;
-    private List<OrderItemDto> items;
+    private List<OrderItemDTO> items;
 }

@@ -8,6 +8,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import service.OrderStatus;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -20,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "orders")
@@ -30,7 +32,7 @@ import java.util.List;
 @Setter
 @ToString
 @Accessors(chain = true)
-public class Order {
+public class OrderEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orders_seq_gen")
@@ -39,22 +41,31 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private CustomerEntity customer;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
+    private RestaurantEntity restaurant;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
     @ManyToOne
     @JoinColumn(name = "courier_id")
-    private Courier courier;
+    private CourierEntity courier;
 
     private Timestamp timestamp;
 
-    @OneToMany(mappedBy = "order")
-    private List<OrderItem> items;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItemEntity> items = new ArrayList<>();
 
+    public void addOrderItem(OrderItemEntity orderItem) {
+        this.items.add(orderItem);
+        orderItem.setOrder(this);
+    }
+
+    public void removeOrderItem(OrderItemEntity orderItem) {
+        this.items.remove(orderItem);
+        orderItem.setOrder(null);
+    }
 }

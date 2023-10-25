@@ -5,8 +5,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class OrderItemResponse {
+public class RestaurantDTO {
 
-    private Long newOrderItemId;
-    private Double price;
+    private String name;
 }

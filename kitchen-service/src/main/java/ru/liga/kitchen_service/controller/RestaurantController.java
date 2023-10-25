@@ -3,7 +3,6 @@ package ru.liga.kitchen_service.controller;
 import advice.GlobalExceptionHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,12 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.liga.kitchen_service.dto.ChangePriceRequest;
-import ru.liga.kitchen_service.dto.ChangePriceResponse;
-import ru.liga.kitchen_service.dto.OrdersResponse;
-import ru.liga.kitchen_service.dto.ResponseOnCreation;
-import ru.liga.kitchen_service.dto.RestaurantMenuItemRequest;
+import ru.liga.kitchen_service.dto.PriceDTO;
+import ru.liga.kitchen_service.dto.RestaurantMenuItemDTO;
 import ru.liga.kitchen_service.service.KitchenService;
+
+import java.util.Map;
 
 @Import(GlobalExceptionHandler.class)
 @Tag(name = "API для работы с заказами на стороне ресторана")
@@ -29,20 +27,21 @@ public class RestaurantController {
 
     private final KitchenService kitchenService;
 
-    @Autowired
     public RestaurantController(KitchenService kitchenService) {
         this.kitchenService = kitchenService;
     }
 
     @Operation(summary = "Получить список заказов по статусу")
     @GetMapping("/orders")
-    public ResponseEntity<OrdersResponse> getOrdersByStatus(@RequestParam String status) {
-        return kitchenService.getOrdersByStatus(status);
+    public ResponseEntity<Map<String, Object>> getOrdersByStatus(@RequestParam String status,
+                                                                 @RequestParam(defaultValue = "0") int pageIndex,
+                                                                 @RequestParam(defaultValue = "10") int pageSize) {
+        return kitchenService.getOrdersByStatus(status, pageIndex, pageSize);
     }
 
     @Operation(summary = "Создать новую позицию в меню")
     @PostMapping("/item")
-    public ResponseEntity<ResponseOnCreation> postNewRestaurantMenuItem(@RequestBody RestaurantMenuItemRequest request) {
+    public ResponseEntity<String> postNewRestaurantMenuItem(@RequestBody RestaurantMenuItemDTO request) {
         return kitchenService.postNewRestaurantMenuItem(request);
     }
 
@@ -54,8 +53,8 @@ public class RestaurantController {
 
     @Operation(summary = "Изменить цену позиции в меню")
     @PostMapping("/item/{id}")
-    public ResponseEntity<ChangePriceResponse> changePriceInMenuItem(@PathVariable("id") Long id,
-                                                                     @RequestBody ChangePriceRequest request) {
-        return kitchenService.changePriceInMenuItem(id, request);
+    public ResponseEntity<String> changePriceInMenuItem(@PathVariable("id") Long id,
+                                                                     @RequestBody PriceDTO request) {
+        return kitchenService.changePriceInMenuItemById(id, request);
     }
 }

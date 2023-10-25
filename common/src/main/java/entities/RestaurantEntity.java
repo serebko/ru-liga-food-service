@@ -8,6 +8,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import service.OrderStatus;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,6 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "restaurants")
@@ -28,7 +30,7 @@ import java.util.List;
 @Setter
 @ToString
 @Accessors(chain = true)
-public class Restaurant {
+public class RestaurantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "restaurants_seq_gen")
@@ -45,9 +47,29 @@ public class Restaurant {
 
     private String coordinates;
 
-    @OneToMany(mappedBy = "restaurant")
-    private List<Order> orders;
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderEntity> orders;
 
-    @OneToMany(mappedBy = "restaurant")
-    private List<RestaurantMenuItem> restaurantMenuItems;
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RestaurantMenuItemEntity> restaurantMenuItems = new ArrayList<>();
+
+    public void addMenuItem(RestaurantMenuItemEntity menuItem) {
+        this.restaurantMenuItems.add(menuItem);
+        menuItem.setRestaurant(this);
+    }
+
+    public void removeMenuItem(RestaurantMenuItemEntity menuItem) {
+        this.restaurantMenuItems.remove(menuItem);
+        menuItem.setRestaurant(null);
+    }
+
+    public void addOrder(OrderEntity order) {
+        this.orders.add(order);
+        order.setRestaurant(this);
+    }
+
+    public void removeOrder(OrderEntity order) {
+        this.orders.remove(order);
+        order.setRestaurant(null);
+    }
 }
