@@ -39,7 +39,7 @@ public class DeliveryController {
 
     @Operation(summary = "Установить статус доставки по ID")
     @PostMapping("/delivery/{id}")
-    public ResponseEntity<String> setDeliveryStatusById(@PathVariable("id") Long id,
+    public ResponseEntity<Void> setDeliveryStatusById(@PathVariable("id") Long id,
                                                         @RequestBody OrderActionDTO orderActionDto) {
         return deliveryService.setDeliveryStatusByOrderId(id, orderActionDto);
     }

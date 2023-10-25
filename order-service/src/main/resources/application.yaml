@@ -8,6 +8,8 @@ management:
       show-details: ALWAYS
 
 spring:
+  application:
+    name: order-service
   jpa:
     hibernate:
       ddl-auto: none

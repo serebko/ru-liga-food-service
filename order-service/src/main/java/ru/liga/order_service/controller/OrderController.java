@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.liga.order_service.dto.OrderDTO;
-import ru.liga.order_service.dto.OrderItemRequest;
-import ru.liga.order_service.dto.OrderRequest;
-import ru.liga.order_service.dto.ResponseOnCreation;
+import ru.liga.order_service.requests.OrderItemRequest;
+import ru.liga.order_service.requests.OrderRequest;
+import ru.liga.order_service.response.OrderResponse;
 import ru.liga.order_service.service.OrderService;
 
 import java.util.Map;
@@ -48,26 +48,26 @@ public class OrderController {
 
     @Operation(summary = "Создать новый заказ")
     @PostMapping("/order")
-    public ResponseEntity<ResponseOnCreation> createOrder(@RequestBody OrderRequest order) {
+    public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest order) {
         return orderService.postNewOrder(order);
     }
 
     @Operation(summary = "Удалить заказ по ID")
     @DeleteMapping("/order/{id}")
-    public ResponseEntity<String> deleteOrderById(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteOrderById(@PathVariable("id") Long id) {
         return orderService.deleteOrderById(id);
     }
 
     @Operation(summary = "Добавить позицию в заказ по ID")
     @PostMapping("/order/{id}/item")
-    public ResponseEntity<String> createNewOrderItem(@PathVariable("id") Long id,
+    public ResponseEntity<Void> createNewOrderItem(@PathVariable("id") Long id,
                                                      @RequestBody OrderItemRequest request) {
         return orderService.createNewOrderItem(id, request);
     }
 
     @Operation(summary = "Удалить позицию из заказа по ID")
     @DeleteMapping("/order/item/{id}")
-    public ResponseEntity<String> deleteOrderItemById(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteOrderItemById(@PathVariable("id") Long id) {
         return orderService.deleteOrderItemById(id);
     }
 

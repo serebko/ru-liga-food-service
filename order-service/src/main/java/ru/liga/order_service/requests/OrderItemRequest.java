@@ -1,4 +1,4 @@
-package ru.liga.order_service.dto;
+package ru.liga.order_service.requests;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

@@ -2,10 +2,11 @@ package ru.liga.kitchen_service.service;
 
 import advice.EntityException;
 import advice.ExceptionStatus;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.OrderEntity;
-import entities.OrderItemEntity;
-import entities.RestaurantEntity;
 import entities.RestaurantMenuItemEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Page;
@@ -14,18 +15,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import repositories.OrderItemRepository;
 import repositories.OrderRepository;
 import repositories.RestaurantMenuItemRepository;
-import repositories.RestaurantRepository;
+import ru.liga.kitchen_service.client.DeliveryServiceClient;
+import ru.liga.kitchen_service.dto.OrderActionDTO;
 import ru.liga.kitchen_service.dto.PriceDTO;
-import ru.liga.kitchen_service.dto.OrderItemDTO;
 import ru.liga.kitchen_service.dto.OrderDTO;
 import ru.liga.kitchen_service.dto.RestaurantMenuItemDTO;
-import service.OrderStatus;
+import statuses.OrderStatus;
+import ru.liga.kitchen_service.rabbit.service.RabbitMQProducerServiceImpl;
 
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,108 +32,85 @@ import java.util.Map;
 @Service
 @Transactional
 @ComponentScan(basePackages = "repositories")
+@Slf4j
 public class KitchenService {
 
-    private final RestaurantRepository restaurantRepository;
     private final RestaurantMenuItemRepository restaurantMenuItemRepository;
-    private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
+    private final DeliveryServiceClient deliveryServiceClient;
+    private final RabbitMQProducerServiceImpl rabbitMQProducerService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public KitchenService(RestaurantRepository restaurantRepository,
-                          RestaurantMenuItemRepository restaurantMenuItemRepository,
-                          OrderItemRepository orderItemRepository,
-                          OrderRepository orderRepository) {
-        this.restaurantRepository = restaurantRepository;
+    public KitchenService(RestaurantMenuItemRepository restaurantMenuItemRepository,
+                          OrderRepository orderRepository,
+                          DeliveryServiceClient deliveryServiceClient,
+                          RabbitMQProducerServiceImpl rabbitMQProducerService,
+                          ObjectMapper objectMapper) {
         this.restaurantMenuItemRepository = restaurantMenuItemRepository;
-        this.orderItemRepository = orderItemRepository;
         this.orderRepository = orderRepository;
+        this.deliveryServiceClient = deliveryServiceClient;
+        this.rabbitMQProducerService = rabbitMQProducerService;
+        this.objectMapper = objectMapper;
     }
 
-    private List<OrderItemDTO> convertOrderItemToOrderItemDTO(List<OrderItemEntity> orderItemEntities) {
-        List<OrderItemDTO> orderItemDTOS = new ArrayList<>();
-        for (OrderItemEntity item : orderItemEntities) {
-            OrderItemDTO dto = new OrderItemDTO()
-                    .setMenuItemId(item.getRestaurantMenuItem().getId())
-                    .setQuantity(item.getQuantity());
-            orderItemDTOS.add(dto);
+    private String tryToSerializeOrderEntityAsString(OrderEntity order) {
+        String orderInLine;
+        try {
+            orderInLine = objectMapper.writeValueAsString(order);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
-        return orderItemDTOS;
-    }
-    private List<OrderDTO> convertOrderToOrderDto(List<OrderEntity> orderEntities) {
-        List<OrderDTO> orderDTOS = new ArrayList<>();
-        for (OrderEntity orderEntity : orderEntities) {
-            List<OrderItemEntity> items = orderEntity.getItems();
 
-            OrderDTO dto = new OrderDTO()
-                    .setId(orderEntity.getId())
-                    .setOrderItems(convertOrderItemToOrderItemDTO(items));
-            orderDTOS.add(dto);
-        }
-        return orderDTOS;
+        return orderInLine;
+    }
+    public void processNewOrder(OrderEntity order) {
+        order.setStatus(OrderStatus.KITCHEN_ACCEPTED);
+        orderRepository.save(order);
+        //обработка нового заказа
     }
 
-    private RestaurantMenuItemEntity mapRestaurantMenuItem(RestaurantMenuItemDTO request) {
-        //TODO: когда будет авторизация, тогда изменить под запрос от определенного ресторана, пока id=4
-
-        RestaurantEntity restaurant = restaurantRepository.findById(4L)
-                .orElseThrow(() -> new EntityException(ExceptionStatus.RESTAURANT_NOT_FOUND));
-
-        return new RestaurantMenuItemEntity()
-                .setRestaurant(restaurant)
-                .setName(request.getName())
-                .setPrice(request.getPrice())
-                .setImage(request.getImage())
-                .setDescription(request.getDescription());
+    public void processCourierResponse(String message) {
+        //обработка ответа курьера
     }
 
-    public ResponseEntity<Map<String, Object>> getOrdersByStatus(String status, int index, int size) {
-        //TODO: когда будет авторизация, тогда изменить под запрос от определенного ресторана
+    public ResponseEntity<Map<String, Object>> getOrdersByStatus(String status, int pageIndex, int pageSize) {
+        //TODO: поменять на авторизованный ресторан
 
-        PageRequest pageRequest = PageRequest.of(index, size);
+        PageRequest pageRequest = PageRequest.of(pageIndex, pageSize);
         Page<OrderEntity> orderEntities = orderRepository
                 .findOrderEntitiesByStatus(OrderStatus.valueOf(status.toUpperCase()), pageRequest);
 
-        if (orderEntities.isEmpty())
+        List<OrderEntity> orders = orderEntities.getContent();
+
+        if (orders.isEmpty())
             throw new EntityException(ExceptionStatus.ORDER_NOT_FOUND);
 
-        List<OrderEntity> orders = orderEntities.getContent();
-        List<OrderDTO> orderDTOS = convertOrderToOrderDto(orders);
+        List<OrderDTO> orderDTOS = OrderDTO.convertOrderToOrderDto(orders);
 
         Map<String, Object> response = new HashMap<>();
         response.put("orders", orderDTOS);
-        response.put("page_index", index);
-        response.put("page_count", size);
+        response.put("page_index", pageIndex);
+        response.put("page_count", pageSize);
 
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<String> postNewRestaurantMenuItem(RestaurantMenuItemDTO request) {
+    public ResponseEntity<Void> postNewRestaurantMenuItem(RestaurantMenuItemDTO request) {
 
-        RestaurantMenuItemEntity savedItem = restaurantMenuItemRepository.save(mapRestaurantMenuItem(request));
-        savedItem.getRestaurant().addMenuItem(savedItem);
+        restaurantMenuItemRepository.save(RestaurantMenuItemDTO.mapRestaurantMenuItem(request));
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    public ResponseEntity<String> deleteRestaurantMenuItemById(Long id) {
-
-        // TODO: @если указать в связи меню и заказа cascadeType delete,
-        //  то у нас будет удаляться каскадно запись в таблице order при только одном запросе@
-        //  *** rest_menu_item не содержит в себе связь с order_item, только order_item имеет OneToOne связь с rest_menu_item
-
-        try {
-            List<OrderItemEntity> orderItemEntities = orderItemRepository.findAllByRestaurantMenuItemId(id)
-                    .orElseThrow(() -> new EntityException(ExceptionStatus.ORDER_ITEM_NOT_FOUND));
-            orderItemRepository.deleteAll(orderItemEntities);
-        } catch (EntityException ignored) {}
+    public ResponseEntity<Void> deleteRestaurantMenuItemById(Long id) {
 
         restaurantMenuItemRepository.deleteById(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    public ResponseEntity<String> changePriceInMenuItemById(Long id, PriceDTO request) {
+    public ResponseEntity<Void> changePriceInMenuItemById(Long id, PriceDTO request) {
 
         Double newPrice = request.getNewPrice();
         if (newPrice <= 0) throw new IllegalArgumentException();
@@ -146,5 +122,18 @@ public class KitchenService {
         restaurantMenuItemRepository.save(menuItem);
 
         return ResponseEntity.ok().build();
+    }
+
+    public ResponseEntity<String> setOrderStatusById(Long id, OrderActionDTO orderAction) {
+        OrderEntity order = orderRepository.findById(id)
+                .orElseThrow(() -> new EntityException(ExceptionStatus.ORDER_NOT_FOUND));
+
+        if (orderAction.getOrderAction().equalsIgnoreCase(OrderStatus.DELIVERY_PENDING.toString()))
+            rabbitMQProducerService.sendMessage(tryToSerializeOrderEntityAsString(order), "new.delivery");
+
+        rabbitMQProducerService.sendMessage("Order status update " + orderAction.getOrderAction(),
+                "kitchen.status.update");
+
+        return deliveryServiceClient.setOrderStatusById(id, orderAction);
     }
 }

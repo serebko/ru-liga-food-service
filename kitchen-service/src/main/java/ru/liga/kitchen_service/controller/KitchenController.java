@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.liga.kitchen_service.dto.OrderActionDTO;
 import ru.liga.kitchen_service.dto.PriceDTO;
 import ru.liga.kitchen_service.dto.RestaurantMenuItemDTO;
 import ru.liga.kitchen_service.service.KitchenService;
@@ -23,11 +24,11 @@ import java.util.Map;
 @Tag(name = "API для работы с заказами на стороне ресторана")
 @RestController
 @RequestMapping("/restaurant")
-public class RestaurantController {
+public class KitchenController {
 
     private final KitchenService kitchenService;
 
-    public RestaurantController(KitchenService kitchenService) {
+    public KitchenController(KitchenService kitchenService) {
         this.kitchenService = kitchenService;
     }
 
@@ -41,20 +42,27 @@ public class RestaurantController {
 
     @Operation(summary = "Создать новую позицию в меню")
     @PostMapping("/item")
-    public ResponseEntity<String> postNewRestaurantMenuItem(@RequestBody RestaurantMenuItemDTO request) {
+    public ResponseEntity<Void> postNewRestaurantMenuItem(@RequestBody RestaurantMenuItemDTO request) {
         return kitchenService.postNewRestaurantMenuItem(request);
     }
 
     @Operation(summary = "Удалить позицию из меню по ID")
     @DeleteMapping("/item/{id}")
-    public ResponseEntity<String> deleteRestaurantMenuItemById(@PathVariable("id") Long id){
+    public ResponseEntity<Void> deleteRestaurantMenuItemById(@PathVariable("id") Long id){
         return kitchenService.deleteRestaurantMenuItemById(id);
     }
 
     @Operation(summary = "Изменить цену позиции в меню")
     @PostMapping("/item/{id}")
-    public ResponseEntity<String> changePriceInMenuItem(@PathVariable("id") Long id,
+    public ResponseEntity<Void> changePriceInMenuItem(@PathVariable("id") Long id,
                                                         @RequestBody PriceDTO request) {
         return kitchenService.changePriceInMenuItemById(id, request);
+    }
+
+    @Operation(summary = "Изменить статус заказа через feign-клиент, используя метод из delivery-service")
+    @PostMapping("/order/{id}")
+    public ResponseEntity<String> setOrderStatusById(@PathVariable("id") Long id,
+                                                     @RequestBody OrderActionDTO orderAction) {
+        return kitchenService.setOrderStatusById(id, orderAction);
     }
 }

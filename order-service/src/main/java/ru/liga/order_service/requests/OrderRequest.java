@@ -1,6 +1,7 @@
-package ru.liga.order_service.dto;
+package ru.liga.order_service.requests;
 
 import lombok.Data;
+import ru.liga.order_service.dto.MenuItemDTO;
 
 import java.util.List;
 

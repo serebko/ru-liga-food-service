@@ -7,9 +7,9 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface RestaurantMapper {
-    @Select(value = "select * from restaurants where id = #{id}")
+    @Select(value = "select * from restaurant where id = #{id}")
     RestaurantEntity findById(@Param("id") Long id);
 
-    @Select(value = "select * from restaurants where name = #{name}")
+    @Select(value = "select * from restaurant where name = #{name}")
     RestaurantEntity findByName(@Param("name") String name);
 }
