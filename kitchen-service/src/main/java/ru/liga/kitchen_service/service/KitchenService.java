@@ -42,18 +42,21 @@ public class KitchenService {
     private final OrderItemRepository orderItemRepository;
     private final OrderRepository orderRepository;
     private final DeliveryServiceClient deliveryServiceClient;
+    private final RabbitMQProducerServiceImpl rabbitMQProducerService;
 
     @Autowired
     public KitchenService(RestaurantRepository restaurantRepository,
                           RestaurantMenuItemRepository restaurantMenuItemRepository,
                           OrderItemRepository orderItemRepository,
                           OrderRepository orderRepository,
-                          DeliveryServiceClient deliveryServiceClient) {
+                          DeliveryServiceClient deliveryServiceClient,
+                          RabbitMQProducerServiceImpl rabbitMQProducerService) {
         this.restaurantRepository = restaurantRepository;
         this.restaurantMenuItemRepository = restaurantMenuItemRepository;
         this.orderItemRepository = orderItemRepository;
         this.orderRepository = orderRepository;
         this.deliveryServiceClient = deliveryServiceClient;
+        this.rabbitMQProducerService = rabbitMQProducerService;
     }
 
     private List<OrderItemDTO> convertOrderItemToOrderItemDTO(List<OrderItemEntity> orderItemEntities) {
@@ -154,6 +157,10 @@ public class KitchenService {
     }
 
     public ResponseEntity<String> setOrderStatusById(Long id, OrderActionDTO orderAction) {
+
+        if (orderAction.getOrderAction().equalsIgnoreCase(OrderStatus.DELIVERY_PENDING.toString()))
+            rabbitMQProducerService.sendMessage("New delivery from <rest_name>!", "new.delivery");
+
         return deliveryServiceClient.setOrderStatusById(id, orderAction);
     }
 }
