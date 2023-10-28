@@ -17,7 +17,7 @@ public class RabbitMQProducerServiceImpl implements RabbitMQProducerService {
     }
 
     public void sendMessage(String message, String routingKey) {
-        rabbitTemplate.convertAndSend("directExchange", routingKey, message);
+            rabbitTemplate.convertAndSend("directExchange", routingKey, message);
         log.debug("Order send to delivery-service...");
     }
 }
