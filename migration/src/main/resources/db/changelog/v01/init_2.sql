@@ -1,14 +1,15 @@
-create sequence if not exists restaurants_seq;
+create sequence if not exists restaurant_seq;
 
-create table if not exists restaurants
+create table if not exists restaurant
 (
-    id bigint not null default nextval('restaurants_seq'),
+    id bigint not null default nextval('restaurant_seq'),
     address varchar(255) not null,
-    status varchar(10),
+    status varchar(30) not null,
+    name varchar(50) not null,
     constraint restaurant_pk primary key (id)
 );
 
-comment on table restaurants is 'Рестораны';
-comment on column restaurants.id is 'Идентификатор ресторана';
-comment on column restaurants.address is 'Адрес ресторана';
-comment on column restaurants.status is 'Статус кухни';
+comment on table restaurant is 'Рестораны';
+comment on column restaurant.id is 'Идентификатор ресторана';
+comment on column restaurant.address is 'Адрес ресторана (координаты)';
+comment on column restaurant.status is 'Статус кухни';

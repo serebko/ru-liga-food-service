@@ -1,6 +1,7 @@
 package ru.liga.kitchen_service.controller;
 
 import advice.GlobalExceptionHandler;
+import entities.RestaurantEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.Import;
@@ -15,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.liga.kitchen_service.dto.OrderActionDTO;
 import ru.liga.kitchen_service.dto.PriceDTO;
+import ru.liga.kitchen_service.dto.RestaurantDTO;
 import ru.liga.kitchen_service.dto.RestaurantMenuItemDTO;
 import ru.liga.kitchen_service.service.KitchenService;
 
+import java.util.List;
 import java.util.Map;
 
 @Import(GlobalExceptionHandler.class)
@@ -64,5 +67,24 @@ public class RestaurantController {
     public ResponseEntity<String> setOrderStatusById(@PathVariable("id") Long id,
                                                      @RequestBody OrderActionDTO orderAction) {
         return kitchenService.setOrderStatusById(id, orderAction);
+    }
+
+
+
+
+
+    @PostMapping("/post")
+    public ResponseEntity<RestaurantEntity> postNewRestaurant(@RequestBody RestaurantDTO dto) {
+        return kitchenService.postNewRestaurant(dto);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteRestaurantById(@PathVariable("id") Long id) {
+        return kitchenService.deleteRestaurantById(id);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<RestaurantEntity>> getAllRestaurants() {
+        return kitchenService.getAllRestaurants();
     }
 }

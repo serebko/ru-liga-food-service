@@ -1,5 +1,6 @@
 package ru.liga.order_service.controller;
 import advice.GlobalExceptionHandler;
+import entities.CustomerEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.liga.order_service.dto.CustomerDTO;
 import ru.liga.order_service.dto.OrderDTO;
 import ru.liga.order_service.dto.OrderItemRequest;
 import ru.liga.order_service.dto.OrderRequest;
 import ru.liga.order_service.dto.ResponseOnCreation;
 import ru.liga.order_service.service.OrderService;
 
+import java.util.List;
 import java.util.Map;
 
 @Import(GlobalExceptionHandler.class)
@@ -81,5 +84,23 @@ public class OrderController {
     @GetMapping("/batis/restaurant")
     public ResponseEntity<Map<String, Object>> getRestaurantByName(@RequestParam String name) {
         return orderService.getRestaurantByNameBatis(name);
+    }
+
+
+
+
+    @PostMapping("/post")
+    public ResponseEntity<CustomerEntity> postNewCustomer(@RequestBody CustomerDTO customerDTO) {
+        return orderService.postNewCustomer(customerDTO);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteCustomerById(@PathVariable("id") Long id) {
+        return orderService.deleteCustomerById(id);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<CustomerEntity>> getAllCustomers() {
+        return orderService.getAllCustomers();
     }
 }

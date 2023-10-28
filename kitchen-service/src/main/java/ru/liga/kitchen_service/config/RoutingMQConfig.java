@@ -8,11 +8,13 @@ import org.springframework.context.annotation.Configuration;
 public class RoutingMQConfig {
 
     @Bean
-    public Declarables myQueue() {
-        Queue queueDirectFirst = new Queue("deliveryQueue", false);
+    public Declarables routeQueueFromKitchenService() {
+        Queue queueDirectFirst = new Queue("postNewDelivery", false);
+        Queue queueDirectSecond = new Queue("kitchenStatusUpdate", false);
         DirectExchange directExchange = new DirectExchange("directExchange");
 
-        return new Declarables(queueDirectFirst, directExchange,
-                BindingBuilder.bind(queueDirectFirst).to(directExchange).with("new.delivery"));
+        return new Declarables(queueDirectFirst, queueDirectSecond, directExchange,
+                BindingBuilder.bind(queueDirectFirst).to(directExchange).with("new.delivery"),
+                BindingBuilder.bind(queueDirectSecond).to(directExchange).with("kitchen.status.update"));
     }
 }

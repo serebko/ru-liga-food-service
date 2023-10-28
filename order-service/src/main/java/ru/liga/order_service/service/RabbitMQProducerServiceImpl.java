@@ -1,4 +1,4 @@
-package ru.liga.kitchen_service.service;
+package ru.liga.order_service.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -16,8 +16,9 @@ public class RabbitMQProducerServiceImpl implements RabbitMQProducerService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
+    @Override
     public void sendMessage(String message, String routingKey) {
         rabbitTemplate.convertAndSend("directExchange", routingKey, message);
-        log.debug("Order send to delivery-service...");
+        log.debug("New order sanded to kitchen...");
     }
 }

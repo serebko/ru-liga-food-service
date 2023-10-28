@@ -1,16 +1,16 @@
-create sequence if not exists couriers_seq;
+create sequence if not exists courier_seq;
 
-create table if not exists couriers
+create table if not exists courier
 (
-    id bigint not null default nextval('couriers_seq'),
+    id bigint not null default nextval('courier_seq'),
     phone varchar(20) not null,
-    status varchar(10),
-    coordinates varchar(30),
+    status varchar(30) not null default 'DELIVERY_PENDING',
+    coordinates varchar(50),
     constraint couriers_pk primary key (id)
 );
 
-comment on table couriers is 'Доставки';
-comment on column couriers.id is 'Идентификатор курьера';
-comment on column couriers.phone is 'Номер телефона курьера';
-comment on column couriers.status is 'Статус доставки';
-comment on column couriers.coordinates is 'Координаты курьера';
+comment on table courier is 'Курьеры';
+comment on column courier.id is 'Идентификатор курьера';
+comment on column courier.phone is 'Номер телефона курьера';
+comment on column courier.status is 'Статус курьера';
+comment on column courier.coordinates is 'Координаты курьера';

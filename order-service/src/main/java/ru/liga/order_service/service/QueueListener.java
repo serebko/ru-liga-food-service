@@ -1,4 +1,4 @@
-package ru.liga.delivery_service.service;
+package ru.liga.order_service.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,9 +10,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class QueueListener {
 
-    /*@RabbitListener(queues = "postNewDelivery")
-    public void processKitchenQueue(String delivery) {
-
-        log.info("New delivery!\n" + delivery);
+    /*@RabbitListener(queues = "updatesToCustomerQueue")
+    public void processOrderQueue(String status) {
+        log.info("Status updated to: <<" + status + ">>");
     }*/
 }

@@ -1,5 +1,6 @@
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,8 +20,9 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 
-@Table(name = "order_items")
+@Table(name = "order_item")
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -29,15 +32,14 @@ import javax.persistence.Table;
 public class OrderItemEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_items_seq_gen")
-    @SequenceGenerator(name = "order_items_seq_gen", sequenceName = "order_items_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_item_seq_gen")
+    @SequenceGenerator(name = "order_item_seq_gen", sequenceName = "order_item_seq", allocationSize = 1)
     private Long id;
 
-    @ManyToOne
     @JoinColumn(name = "order_id")
-    private OrderEntity order;
+    private Long orderId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="restaurant_menu_item")
     private RestaurantMenuItemEntity restaurantMenuItem;
 

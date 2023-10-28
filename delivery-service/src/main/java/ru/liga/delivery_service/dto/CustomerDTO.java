@@ -8,5 +8,5 @@ import lombok.experimental.Accessors;
 public class CustomerDTO {
 
     private String address;
-    private String distance;
+    private Double distance;
 }

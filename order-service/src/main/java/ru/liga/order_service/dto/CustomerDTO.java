@@ -1,12 +1,13 @@
-package ru.liga.delivery_service.dto;
+package ru.liga.order_service.dto;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-public class RestaurantDTO {
+public class CustomerDTO {
 
+    private String phone;
+    private String email;
     private String address;
-    private Double distance;
 }

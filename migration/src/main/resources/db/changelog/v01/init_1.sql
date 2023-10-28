@@ -1,16 +1,16 @@
-create sequence if not exists customers_seq;
+create sequence if not exists customer_seq;
 
-create table if not exists customers
+create table if not exists customer
 (
-    id bigint not null default nextval('customers_seq'),
+    id bigint not null default nextval('customer_seq'),
     phone varchar(20) not null,
-    email varchar(255),
+    email varchar(255) not null,
     address varchar(255) not null,
     constraint customers_pk primary key (id)
 );
 
-comment on table customers is 'Заказчики';
-comment on column customers.id is 'Идентификатор заказчика';
-comment on column customers.phone is 'Номер телефона заказчика';
-comment on column customers.email is 'Email заказчика';
-comment on column customers.address is 'Адрес заказчика';
+comment on table customer is 'Заказчики';
+comment on column customer.id is 'Идентификатор заказчика';
+comment on column customer.phone is 'Номер телефона заказчика';
+comment on column customer.email is 'Email заказчика';
+comment on column customer.address is 'Адрес заказчика (координаты)';

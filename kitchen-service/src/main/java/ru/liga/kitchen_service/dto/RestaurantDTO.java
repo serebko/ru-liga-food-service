@@ -1,4 +1,4 @@
-package ru.liga.delivery_service.dto;
+package ru.liga.kitchen_service.dto;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -8,5 +8,6 @@ import lombok.experimental.Accessors;
 public class RestaurantDTO {
 
     private String address;
-    private Double distance;
+    private String status;
+    private String name;
 }
