@@ -7,8 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import statuses.KitchenStatus;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -37,7 +40,8 @@ public class RestaurantEntity {
 
     private String address;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private KitchenStatus status;
 
     private String name;
 

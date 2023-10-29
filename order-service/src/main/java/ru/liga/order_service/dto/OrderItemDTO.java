@@ -1,5 +1,6 @@
 package ru.liga.order_service.dto;
 
+import entities.OrderItemEntity;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -11,4 +12,13 @@ public class OrderItemDTO {
     private Long quantity;
     private String description;
     private String image;
+
+    public static OrderItemDTO convertOrderItemToOrderItemDto(OrderItemEntity item) {
+
+        return new OrderItemDTO()
+                .setImage(item.getRestaurantMenuItem().getImage())
+                .setPrice(item.getPrice())
+                .setQuantity(item.getQuantity())
+                .setDescription(item.getRestaurantMenuItem().getDescription());
+    }
 }

@@ -30,6 +30,6 @@ public class RabbitConfiguration {
     public RabbitTemplate rabbitTemplate() {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
         rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
-        return new RabbitTemplate(connectionFactory());
+        return rabbitTemplate;
     }
 }

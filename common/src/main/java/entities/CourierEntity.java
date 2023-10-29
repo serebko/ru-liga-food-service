@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import statuses.CourierStatus;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -41,7 +42,7 @@ public class CourierEntity {
     private String phone;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
+    private CourierStatus status;
 
     private String coordinates;
 

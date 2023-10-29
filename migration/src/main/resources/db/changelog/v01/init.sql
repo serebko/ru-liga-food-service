@@ -4,7 +4,7 @@ create table if not exists courier
 (
     id bigint not null default nextval('courier_seq'),
     phone varchar(20) not null,
-    status varchar(30) not null default 'DELIVERY_PENDING',
+    status varchar(30) not null default 'PENDING',
     coordinates varchar(50),
     constraint couriers_pk primary key (id)
 );
