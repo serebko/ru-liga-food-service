@@ -2,12 +2,13 @@ package ru.liga.delivery_service.service;
 
 import advice.EntityException;
 import advice.ExceptionStatus;
+import dto.ResponseDTO;
 import entities.CourierEntity;
 import entities.CustomerEntity;
 import entities.OrderEntity;
 import entities.RestaurantEntity;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,9 +34,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @ComponentScan(basePackages = "repositories")
 @Slf4j
+@RequiredArgsConstructor
 public class DeliveryService {
 
     private final OrderRepository orderRepository;
@@ -43,19 +44,6 @@ public class DeliveryService {
     private final CourierRepository courierRepository;
     private final RestaurantRepository restaurantRepository;
     private final CustomerRepository customerRepository;
-
-    @Autowired
-    public DeliveryService(OrderRepository orderRepository,
-                           RabbitMQProducerServiceImpl rabbitMQProducerService,
-                           CourierRepository courierRepository,
-                           RestaurantRepository restaurantRepository,
-                           CustomerRepository customerRepository) {
-        this.orderRepository = orderRepository;
-        this.rabbitMQProducerService = rabbitMQProducerService;
-        this.courierRepository = courierRepository;
-        this.restaurantRepository = restaurantRepository;
-        this.customerRepository = customerRepository;
-    }
 
     private double calculateDistance(String courierCoordinates, String destinationCoordinates) {
         String[] parts1 = courierCoordinates.split(",");
@@ -99,8 +87,8 @@ public class DeliveryService {
         CustomerEntity customer = customerRepository.findById(orderEntity.getCustomerId())
                 .orElseThrow(() -> new EntityException(ExceptionStatus.CUSTOMER_NOT_FOUND));
 
-        //TODO: поменять на авторизованного курьера
-        CourierEntity courier = courierRepository.findById(5L)
+
+        CourierEntity courier = courierRepository.findById(5L)  //TODO: авторизованный курьер
                 .orElseThrow(() -> new EntityException(ExceptionStatus.CUSTOMER_NOT_FOUND));
 
         String restaurantCoordinates = restaurant.getAddress();
@@ -124,7 +112,7 @@ public class DeliveryService {
                 .setCustomer(customerDto);
     }
 
-    public ResponseEntity<Map<String, Object>> getDeliveriesByStatus(String status, int pageIndex, int pageSize) {
+    public ResponseEntity<ResponseDTO<DeliveryDTO>> getDeliveriesByStatus(String status, int pageIndex, int pageSize) {
 
         PageRequest pageRequest = PageRequest.of(pageIndex, pageSize);
         Page<OrderEntity> orderEntitiesPage = orderRepository
@@ -138,15 +126,16 @@ public class DeliveryService {
                 .map(this::convertOrderToDeliveryDTO)
                 .collect(Collectors.toList());
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("orders", deliveryDtos);
-        response.put("page_index", pageIndex);
-        response.put("page_count", pageSize);
+        ResponseDTO<DeliveryDTO> response = new ResponseDTO<DeliveryDTO>()
+                .setOrders(deliveryDtos)
+                .setPageIndex(pageIndex)
+                .setPageCount(pageSize);
 
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<Void> setDeliveryStatusByOrderId(Long orderId, OrderActionDTO orderActionDto) {
+    @Transactional
+    public ResponseEntity<String> setDeliveryStatusByOrderId(Long orderId, OrderActionDTO orderActionDto) {
 
         OrderEntity orderEntity = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityException(ExceptionStatus.ORDER_NOT_FOUND));
@@ -155,7 +144,7 @@ public class DeliveryService {
 
         if (OrderStatus.DELIVERY_PICKING.toString().equals(orderAction)) {
             rabbitMQProducerService.sendMessage("<courier_name> will pick that order!", "courier.response");
-            orderEntity.setCourierId(5L);
+            orderEntity.setCourierId(5L); //TODO авторизованный курьер
         } else if (OrderStatus.DELIVERY_DENIED.toString().equals(orderAction)) {
             rabbitMQProducerService.sendMessage("Delivery denied", "courier.response");
         }
@@ -168,6 +157,7 @@ public class DeliveryService {
         return ResponseEntity.ok().build();
     }
 
+    @Transactional  //questionable
     public void processNewDelivery(OrderEntity order) {
 
         RestaurantEntity restaurant = restaurantRepository.findById(order.getRestaurantId())
@@ -200,6 +190,7 @@ public class DeliveryService {
 
         if (nearestCourier.getStatus().equals(CourierStatus.PICKING)) {
             order.setCourierId(nearestCourier.getId());
+            orderRepository.save(order);
         } else if (nearestCourier.getStatus().equals(CourierStatus.DENIED)) {
             sendMessageToNearestCourier(nearestCouriers, order);
         }

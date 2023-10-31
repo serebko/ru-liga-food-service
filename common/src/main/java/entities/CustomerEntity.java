@@ -45,12 +45,12 @@ public class CustomerEntity {
     private List<OrderEntity> orders = new ArrayList<>();
 
     public void addOrder(OrderEntity order) {
-        this.orders.add(order);
+        orders.add(order);
         order.setCustomerId(this.id);
     }
 
     public void removeOrder(OrderEntity order) {
-        this.orders.remove(order);
+        orders.remove(order);
         order.setCustomerId(null);
     }
 }

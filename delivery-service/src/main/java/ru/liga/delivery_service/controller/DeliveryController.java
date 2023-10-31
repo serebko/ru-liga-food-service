@@ -1,6 +1,7 @@
 package ru.liga.delivery_service.controller;
 
 import advice.GlobalExceptionHandler;
+import dto.ResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.annotation.Import;
@@ -12,13 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.liga.delivery_service.dto.DeliveryDTO;
 import ru.liga.delivery_service.dto.OrderActionDTO;
 import ru.liga.delivery_service.service.DeliveryService;
 
-import java.util.Map;
-
 @Import(GlobalExceptionHandler.class)
-@Tag(name = "API для работы с доставками")
+@Tag(name = "Приложение на стороне курьера", description = "Управление доставками")
 @RestController
 @RequestMapping("/courier")
 public class DeliveryController {
@@ -31,15 +31,15 @@ public class DeliveryController {
 
     @Operation(summary = "Получить доставки по статусу")
     @GetMapping("/deliveries")
-    public ResponseEntity<Map<String, Object>> getDeliveriesByStatus(@RequestParam String status,
-                                                                     @RequestParam(defaultValue = "0") int pageIndex,
-                                                                     @RequestParam(defaultValue = "10") int pageSize) {
+    public ResponseEntity<ResponseDTO<DeliveryDTO>> getDeliveriesByStatus(@RequestParam String status,
+                                                                          @RequestParam(defaultValue = "0") int pageIndex,
+                                                                          @RequestParam(defaultValue = "10") int pageSize) {
         return deliveryService.getDeliveriesByStatus(status, pageIndex, pageSize);
     }
 
     @Operation(summary = "Установить статус доставки по ID")
     @PostMapping("/delivery/{id}")
-    public ResponseEntity<Void> setDeliveryStatusById(@PathVariable("id") Long id,
+    public ResponseEntity<String> setDeliveryStatusById(@PathVariable("id") Long id,
                                                         @RequestBody OrderActionDTO orderActionDto) {
         return deliveryService.setDeliveryStatusByOrderId(id, orderActionDto);
     }

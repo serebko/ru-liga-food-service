@@ -1,3 +1,7 @@
+server:
+  port: 8082
+  forward-headers-strategy: framework
+
 management:
   endpoints:
     web:
@@ -10,6 +14,13 @@ management:
 spring:
   application:
     name: order-service
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://127.0.0.1:9000
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -23,10 +34,8 @@ spring:
             revision_field_name: rev_id
             revision_type_field_name: rev_type
     show-sql: 'true'
+
   datasource:
     password: 'lost4815162342'
     url: jdbc:postgresql://localhost:5432/postgres
-
     username: 'postgres'
-server:
-  port: 8082

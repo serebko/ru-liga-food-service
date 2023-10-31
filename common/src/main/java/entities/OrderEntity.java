@@ -32,8 +32,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Accessors(chain = true)
+@ToString
 public class OrderEntity {
 
     @Id
@@ -59,12 +59,12 @@ public class OrderEntity {
     private List<OrderItemEntity> items = new ArrayList<>();
 
     public void addOrderItem(OrderItemEntity orderItem) {
-        this.items.add(orderItem);
+        items.add(orderItem);
         orderItem.setOrderId(this.id);
     }
 
     public void removeOrderItem(OrderItemEntity orderItem) {
-        this.items.remove(orderItem);
+        items.remove(orderItem);
         orderItem.setOrderId(null);
     }
 }

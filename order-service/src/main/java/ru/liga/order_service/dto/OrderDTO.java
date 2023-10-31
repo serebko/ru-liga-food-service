@@ -3,6 +3,7 @@ package ru.liga.order_service.dto;
 
 import entities.OrderEntity;
 import entities.OrderItemEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,11 +13,19 @@ import java.util.stream.Collectors;
 
 @Data
 @Accessors(chain = true)
+@Schema(description = "Сущность заказа")
 public class OrderDTO {
 
+    @Schema(description = "Идентификатор заказа")
     private Long id;
-    private RestaurantDTO restaurant;
+
+    @Schema(description = "Имя ресторана")
+    private RestaurantNameDTO restaurant;
+
+    @Schema(description = "Дата и время совершения заказа")
     private Timestamp timestamp;
+
+    @Schema(description = "Список позиции в заказе")
     private List<OrderItemDTO> items;
 
     public static OrderDTO convertOrderToOrderDto(OrderEntity orderEntity, String restaurantName) {
@@ -28,7 +37,7 @@ public class OrderDTO {
 
         return new OrderDTO()
                 .setId(orderEntity.getId())
-                .setRestaurant(new RestaurantDTO().setName(restaurantName))
+                .setRestaurant(new RestaurantNameDTO().setName(restaurantName))
                 .setItems(itemDTOS)
                 .setTimestamp(orderEntity.getTimestamp());
     }

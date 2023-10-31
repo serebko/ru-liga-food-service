@@ -19,6 +19,6 @@ public class RabbitMQProducerServiceImpl implements RabbitMQProducerService {
     @Override
     public void sendMessage(String message, String routingKey) {
         rabbitTemplate.convertAndSend("directExchange", routingKey, message);
-        log.info("New order sanded to kitchen through notification service...");
+        log.info("New order sent to kitchen through notification service...");
     }
 }

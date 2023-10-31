@@ -29,8 +29,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Accessors(chain = true)
+@ToString
 public class RestaurantEntity {
 
     @Id
@@ -52,22 +52,22 @@ public class RestaurantEntity {
     private List<RestaurantMenuItemEntity> restaurantMenuItems = new ArrayList<>();
 
     public void addMenuItem(RestaurantMenuItemEntity menuItem) {
-        this.restaurantMenuItems.add(menuItem);
+        restaurantMenuItems.add(menuItem);
         menuItem.setRestaurantId(this.id);
     }
 
     public void removeMenuItem(RestaurantMenuItemEntity menuItem) {
-        this.restaurantMenuItems.remove(menuItem);
+        restaurantMenuItems.remove(menuItem);
         menuItem.setRestaurantId(null);
     }
 
     public void addOrder(OrderEntity order) {
-        this.orders.add(order);
+        orders.add(order);
         order.setRestaurantId(this.id);
     }
 
     public void removeOrder(OrderEntity order) {
-        this.orders.remove(order);
+        orders.remove(order);
         order.setRestaurantId(null);
     }
 }

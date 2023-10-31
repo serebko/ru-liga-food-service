@@ -1,0 +1,52 @@
+server:
+  port: 8084
+  forward-headers-strategy: framework
+
+spring:
+  application:
+    name: cloud-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: customer-service
+          uri: http://127.0.0.1:8082
+          predicates:
+            - Path=/customer/**
+          filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+        - id: kitchen-service
+          uri: http://127.0.0.1:8081
+          predicates:
+            - Path=/restaurant/**
+          filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+        - id: courier-service
+          uri: http://127.0.0.1:8080
+          predicates:
+            - Path=/courier/**
+          filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+
+  security:
+    oauth2:
+      client:
+        registration:
+          gateway:
+            provider: spring
+            client-id: gateway
+            client-secret: secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://127.0.0.1:8084/login/oauth2/code/gateway"
+            scope: openid,customer.read,restaurant.read,courier.read
+        provider:
+          spring:
+            issuer-uri: http://127.0.0.1:9000
+
+logging:
+  level:
+    org:
+      springframework:
+        web: TRACE
