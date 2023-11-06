@@ -11,7 +11,6 @@ import entities.OrderItemEntity;
 import entities.RestaurantEntity;
 import entities.RestaurantMenuItemEntity;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +40,6 @@ import java.util.stream.Collectors;
 
 @Service
 @ComponentScan(basePackages = "repositories")
-@Slf4j
 @RequiredArgsConstructor
 public class OrderService {
 
@@ -75,13 +73,9 @@ public class OrderService {
         RestaurantMenuItemEntity restaurantMenuItemEntity = restaurantMenuItemRepository.findById(menuItemId)
                 .orElseThrow(() -> new EntityException(ExceptionStatus.RESTAURANT_MENU_ITEM_NOT_FOUND));
 
-        if (!menu.contains(restaurantMenuItemEntity)) {
-            log.warn("Указанные позиции отсутствуют в меню ресторана " + restaurant.getName()    //TODO: не отбивает, а просто 500ка
-                    + ". Доступные позиции для заказа: " + menu.stream()
-                    .mapToLong(RestaurantMenuItemEntity::getId)
-                    .toString());
+        if (!menu.contains(restaurantMenuItemEntity))
             throw new EntityException(ExceptionStatus.RESTAURANT_MENU_ITEM_NOT_FOUND);
-        }
+
 
         return new OrderItemEntity()
                 .setOrderId(order.getId())
@@ -139,30 +133,20 @@ public class OrderService {
     public ResponseEntity<OrderResponse> postNewOrder(OrderRequest orderRequest) {
 
         Long restaurantId = orderRequest.getRestaurantId();
-        log.info("Поиск ресторана по id = " + restaurantId);
         RestaurantEntity restaurant = restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new EntityException(ExceptionStatus.RESTAURANT_NOT_FOUND));
 
-        log.info("Поиск заказчика по id = 5");
         CustomerEntity customer = customerRepository.findById(5L) //TODO авторизованный заказчик
                 .orElseThrow(() -> new EntityException(ExceptionStatus.CUSTOMER_NOT_FOUND));
         OrderEntity orderEntity = mapOrderEntity(customer, restaurant);
 
-        log.info("Сохранение заказа в БД...");
         OrderEntity savedOrder = orderRepository.save(orderEntity);
-        log.info("Заказ " + savedOrder + " сохранён!");
-
         List<MenuItemDTO> menuItemDTOS = orderRequest.getMenuItems();
-
-        log.info("Маппинг ДТО позиций заказа: " + menuItemDTOS + " на сущность...");
         List<OrderItemEntity> orderItems = menuItemDTOS.stream()
                 .map(orderItem -> mapOrderItem(savedOrder, orderItem.getMenuItemId(), orderItem.getQuantity()))
                 .collect(Collectors.toList());
 
-        log.info("Маппинг успешный! Сохранение в базу...");
         orderItemRepository.saveAll(orderItems);
-        log.info("Позиции заказа: " + orderItems + " сохранены!");
-
         rabbitMQProducerService.sendMessage(tryToSerializeOrderEntityAsString(savedOrder),
                 "new.order.notification");
 
