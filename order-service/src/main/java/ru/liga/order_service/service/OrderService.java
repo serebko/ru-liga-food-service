@@ -76,10 +76,8 @@ public class OrderService {
                 .orElseThrow(() -> new EntityException(ExceptionStatus.RESTAURANT_MENU_ITEM_NOT_FOUND));
 
         if (!menu.contains(restaurantMenuItemEntity)) {
-            log.warn("Указанные позиции отсутствуют в меню ресторана " + restaurant.getName()    //TODO: не отбивает, а просто 500ка
-                    + ". Доступные позиции для заказа: " + menu.stream()
-                    .mapToLong(RestaurantMenuItemEntity::getId)
-                    .toString());
+            log.warn("Указанные позиции отсутствуют в меню ресторана " + restaurant.getName()
+                    + ". Доступные позиции для заказа: " + menu);
             throw new EntityException(ExceptionStatus.RESTAURANT_MENU_ITEM_NOT_FOUND);
         }
 
@@ -163,8 +161,8 @@ public class OrderService {
         orderItemRepository.saveAll(orderItems);
         log.info("Позиции заказа: " + orderItems + " сохранены!");
 
-        rabbitMQProducerService.sendMessage(tryToSerializeOrderEntityAsString(savedOrder),
-                "new.order.notification");
+        /*rabbitMQProducerService.sendMessage(tryToSerializeOrderEntityAsString(savedOrder),
+                "new.order.notification");*/
 
         OrderResponse response = new OrderResponse().setId(savedOrder.getId())
                 .setSecretPaymentUrl("url")
