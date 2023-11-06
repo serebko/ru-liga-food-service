@@ -24,8 +24,8 @@
 		<module>notification-service</module>
 		<module>order-service</module>
 		<module>migration</module>
-		<module>cloud-gateway</module>
-		<module>auth-service</module>
+		<!--<module>cloud-gateway</module>
+		<module>auth-service</module>-->
 	</modules>
 
 </project>
