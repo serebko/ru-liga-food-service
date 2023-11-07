@@ -43,7 +43,7 @@ public class OrderControllerTest {
         when(orderService.postNewOrder(any(OrderRequest.class)))
                 .thenReturn(ResponseEntity.status(HttpStatus.CREATED).body(orderResponse));
 
-        ResponseEntity<OrderResponse> responseEntity = orderController.createOrder(orderRequest);
+        ResponseEntity<OrderResponse> responseEntity = orderController.postNewOrder(orderRequest);
 
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
@@ -75,7 +75,7 @@ public class OrderControllerTest {
 
         when(orderService.postNewOrder(any(OrderRequest.class))).thenReturn(expectedResponse);
 
-        ResponseEntity<OrderResponse> actualResponse = orderController.createOrder(orderRequest);
+        ResponseEntity<OrderResponse> actualResponse = orderController.postNewOrder(orderRequest);
 
         assertEquals(HttpStatus.NOT_FOUND, actualResponse.getStatusCode());
         assertNull(actualResponse.getBody());

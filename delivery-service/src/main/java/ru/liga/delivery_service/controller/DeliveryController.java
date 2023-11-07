@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,8 +37,8 @@ public class DeliveryController {
         return deliveryService.getDeliveriesByStatus(status, pageIndex, pageSize);
     }
 
-    @Operation(summary = "Установить статус доставки по ID")
-    @PostMapping("/delivery/{id}")
+    @Operation(summary = "Установить статус доставки по ID заказа")
+    @PutMapping("/delivery/{id}")
     public ResponseEntity<String> setDeliveryStatusById(@PathVariable("id") Long id,
                                                         @RequestBody OrderActionDTO orderActionDto) {
         return deliveryService.setDeliveryStatusByOrderId(id, orderActionDto);

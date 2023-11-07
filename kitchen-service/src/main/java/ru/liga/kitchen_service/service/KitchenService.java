@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repositories.OrderRepository;
 import repositories.RestaurantMenuItemRepository;
-import repositories.RestaurantRepository;
 import ru.liga.kitchen_service.client.DeliveryServiceClient;
 import ru.liga.kitchen_service.dto.OrderActionDTO;
 import ru.liga.kitchen_service.dto.PriceDTO;
@@ -37,7 +36,6 @@ public class KitchenService {
 
     private final RestaurantMenuItemRepository restaurantMenuItemRepository;
     private final OrderRepository orderRepository;
-    private final RestaurantRepository restaurantRepository;
     private final DeliveryServiceClient deliveryServiceClient;
     private final RabbitMQProducerServiceImpl rabbitMQProducerService;
     private final ObjectMapper objectMapper;
@@ -106,7 +104,7 @@ public class KitchenService {
     public ResponseEntity<RestaurantMenuItemEntity> changePriceInMenuItemById(Long id, PriceDTO request) {
 
         Double newPrice = request.getNewPrice();
-        if (newPrice <= 0) throw new IllegalArgumentException();
+        if (newPrice <= 0) throw new IllegalArgumentException("Цена не может быть меньше или равна нулю");
 
         RestaurantMenuItemEntity menuItem = restaurantMenuItemRepository.findById(id)
                 .orElseThrow(() -> new EntityException(ExceptionStatus.RESTAURANT_MENU_ITEM_NOT_FOUND));

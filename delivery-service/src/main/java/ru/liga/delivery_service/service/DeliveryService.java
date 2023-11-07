@@ -50,7 +50,7 @@ public class DeliveryService {
         String[] parts2 = destinationCoordinates.split(",");
 
         if (parts1.length != 2 || parts2.length != 2) {
-            throw new IllegalArgumentException("Неправильный формат координат");
+            throw new IllegalArgumentException("Неправильный формат координат\nИспользуйте следующий формат: '56.26851626074396, 46.4656705552914' ");
         }
 
         double latitude1 = Double.parseDouble(parts1[0].trim());

@@ -55,7 +55,7 @@ public class OrderController {
 
     @Operation(summary = "Создать новый заказ", description = "Создаёт новый заказ от пользователя")
     @PostMapping("/order")
-    public ResponseEntity<OrderResponse> createOrder(@RequestBody
+    public ResponseEntity<OrderResponse> postNewOrder(@RequestBody
                                                          @Parameter(description = "Данные нового заказа",
                                                                  required = true) OrderRequest order) {
         return orderService.postNewOrder(order);

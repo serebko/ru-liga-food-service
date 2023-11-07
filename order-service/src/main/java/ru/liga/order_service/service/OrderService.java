@@ -66,7 +66,7 @@ public class OrderService {
     }
 
     private OrderItemEntity mapOrderItem(OrderEntity order, Long menuItemId, Long quantity) {
-        if (quantity <= 0) throw new IllegalArgumentException();
+        if (quantity <= 0) throw new IllegalArgumentException("Количество не может быть меньше или равно нулю");
         RestaurantEntity restaurant = restaurantRepository.findById(order.getRestaurantId())
                 .orElseThrow(() -> new EntityException(ExceptionStatus.RESTAURANT_NOT_FOUND));
 
