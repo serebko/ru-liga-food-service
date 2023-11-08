@@ -1,0 +1,39 @@
+server:
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  #<2>
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+spring:
+  application:
+    name: order-service
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: 'true'
+      org:
+        hibernate:
+          envers:
+            revision_field_name: rev_id
+            revision_type_field_name: rev_type
+    show-sql: 'true'
+
+  datasource:
+    password: 'lost4815162342'
+    url: jdbc:postgresql://localhost:5433/postgres
+    username: 'postgres'
+
+notification:
+  service: http://localhost:8083
+  orderLogin: admin
+  orderPass: admin

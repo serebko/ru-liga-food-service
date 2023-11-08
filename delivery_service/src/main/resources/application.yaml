@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  #<2>
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+spring:
+  application:
+    name: delivery-service
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: 'true'
+      org:
+        hibernate:
+          envers:
+            revision_field_name: rev_id
+            revision_type_field_name: rev_type
+    show-sql: 'true'
+
+  datasource:
+    password: 'lost4815162342'
+    url: jdbc:postgresql://localhost:5434/postgres
+    username: 'postgres'
+
+
+notification:
+  service: http://localhost:8083
+  deliveryLogin: delivery
+  deliveryPass: deliveryPass
+
+order:
+  service: http://localhost:8081
+  deliveryLogin: delivery
+  deliveryPass: deliveryPass

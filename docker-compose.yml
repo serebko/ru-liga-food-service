@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  ordersDb:
+    image: postgres:14.7-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: lost4815162342
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./sqlScripts/orders:/docker-entrypoint-initdb.d
+
+  deliveryDb:
+    image: postgres:14.7-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: lost4815162342
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./sqlScripts/courier:/docker-entrypoint-initdb.d
+
+  rabbitmq:
+#    image: rabbitmq:3-management-alpine
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+#  notification:
+#    build: ./notification_service
+#    ports:
+#      - "8083:8083"
+#      - "5005:5005"
+#    depends_on:
+#      - rabbitmq
