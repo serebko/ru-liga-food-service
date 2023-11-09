@@ -1,4 +1,4 @@
-package ru.liga.notification_service.security;
+package ru.liga.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,16 +17,16 @@ public class SpringSecurityConfig {
 
     @Bean
     public static PasswordEncoder passwordEncoder(){
-      return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf().disable()
-            .authorizeHttpRequests((authorize) -> {
-              authorize.anyRequest().authenticated();
-            }).httpBasic(Customizer.withDefaults());
+                .authorizeHttpRequests((authorize) -> {
+                    authorize.anyRequest().authenticated();
+                }).httpBasic(Customizer.withDefaults());
         return http.build();
     }
 
@@ -51,6 +51,6 @@ public class SpringSecurityConfig {
                 .roles("USER")
                 .build();
 
-      return new InMemoryUserDetailsManager(admin, kitchen, delivery);
+        return new InMemoryUserDetailsManager(admin, kitchen, delivery);
     }
 }
